@@ -1,12 +1,13 @@
 import { chain, isEmpty, isNil, unionBy } from 'lodash'
 import { JOB_DEFAULT_OUTPUT_PATH, PANEL_DEFAULT_ACCESS_KEY, TAG_LATEST } from '../../constants'
 import {
+  generateCpuValue,
+  generateMemoryValue,
   getDefaultCpuUnit,
   getDefaultMemoryUnit,
   getLimitsGpuType,
   getVolumeType
-} from '../../utils/panelResources.util'
-import { generateEnvVariable } from '../../utils/generateEnvironmentVariable'
+} from './JobWizardSteps/JobWizardResources/JowWizardResources.utils'
 import { isEveryObjectValueEmpty } from '../../utils/isEveryObjectValueEmpty'
 import { parseEnvVariables } from '../../utils/parseEnvironmentVariables'
 import { parseKeyValues } from '../../utils'
@@ -35,16 +36,16 @@ export const generateJobWizardData = (
 
   const currentLimits = {
     ...limits,
-    cpu: limits?.cpu ?? defaultResources.limits?.cpu ?? '',
+    cpu: generateCpuValue(limits?.cpu ?? defaultResources.limits?.cpu ?? ''),
     cpuUnit: getDefaultCpuUnit(limits ?? {}, defaultResources?.requests.cpu),
-    memory: limits?.memory ?? defaultResources.limits?.memory ?? '',
+    memory: generateMemoryValue(limits?.memory ?? defaultResources.limits?.memory ?? ''),
     memoryUnit: getDefaultMemoryUnit(limits ?? {}, defaultResources?.limits.memory),
     [gpuType]: limits?.[gpuType] ?? defaultResources?.limits.gpu ?? ''
   }
   const currentRequest = {
-    cpu: requests?.cpu ?? defaultResources.requests?.cpu ?? '',
+    cpu: generateCpuValue(requests?.cpu ?? defaultResources.requests?.cpu ?? ''),
     cpuUnit: getDefaultCpuUnit(requests ?? {}, defaultResources?.requests.cpu),
-    memory: requests?.memory ?? defaultResources.requests?.memory ?? '',
+    memory: generateMemoryValue(requests?.memory ?? defaultResources.requests?.memory ?? ''),
     memoryUnit: getDefaultMemoryUnit(requests ?? {}, defaultResources?.requests.memory)
   }
 
@@ -66,9 +67,10 @@ export const generateJobWizardData = (
       outputPath: JOB_DEFAULT_OUTPUT_PATH
     },
     parameters: {},
-    environmentVariables: parseEnvVariables(environmentVariables).map(env => ({
-      data: generateEnvVariable(env)
-    })),
+    environmentVariables: parseEnvVariables(environmentVariables).map(env => {
+      const { name: key, ...rest } = env
+      return { key, ...rest }
+    }),
     secretSources: [],
     access_key: PANEL_DEFAULT_ACCESS_KEY,
     nodeSelector,
@@ -348,4 +350,3 @@ const parseParameterValue = parameterValue => {
     return ''
   }
 }
-

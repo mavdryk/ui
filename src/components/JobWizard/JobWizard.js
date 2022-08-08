@@ -6,10 +6,12 @@ import { connect } from 'react-redux'
 import { isEmpty } from 'lodash'
 
 import FormDirtySpy from '../../common/FormDirtySpy/FormDirtySpy'
+import JobWizardAdvanced from './JobWizardSteps/JobWizardAdvanced/JobWizardAdvanced'
 import JobWizardDataInputs from './JobWizardSteps/JobWizardDataInputs/JobWizardDataInputs'
 import JobWizardFunctionSelection from './JobWizardSteps/JobWizardFunctionSelection/JobWizardFunctionSelection'
 import JobWizardJobDetails from './JobWizardSteps/JobWizardJobDetails/JobWizardJobDetails'
 import JobWizardParameters from './JobWizardSteps/JobWizardParameters/JobWizardParameters'
+import JobWizardResources from './JobWizardSteps/JobWizardResources/JobWizardResources'
 import { Wizard } from 'igz-controls/components'
 
 import functionsActions from '../../actions/functions'
@@ -78,9 +80,9 @@ const JobWizard = ({
         label: 'Advanced',
         getActions: ({ formState, handleOnClose }) => [
           {
-            label: 'Schedule',
+            label: 'Schedule for later',
             onClick: () => {},
-            variant: 'danger'
+            variant: 'tertiary'
           },
           {
             label: 'Run',
@@ -139,8 +141,8 @@ const JobWizard = ({
               <JobWizardJobDetails formState={formState} jobAdditionalData={jobAdditionalData} />
               <JobWizardDataInputs formState={formState} />
               <JobWizardParameters formState={formState} />
-              <div>Resources</div>
-              <div>Advanced</div>
+              <JobWizardResources formState={formState} frontendSpec={frontendSpec} />
+              <JobWizardAdvanced formState={formState} />
             </Wizard>
             <FormDirtySpy />
           </>
