@@ -65,13 +65,6 @@ const RegisterArtifactModal = ({
       }
     }
 
-    if (values.kind === 'model' && values.target_path.includes('/')) {
-      const path = values.target_path.split(/([^/]*)$/)
-
-      data.target_path = path[0]
-      data.model_file = path[1]
-    }
-
     return artifactApi
       .registerArtifact(projectName, data)
       .then(response => {
@@ -98,7 +91,7 @@ const RegisterArtifactModal = ({
 
   const getModalActions = formState => {
     const defaultActions = actions
-      ? actions(formState)
+      ? actions(formState, handleCloseModal)
       : [
           {
             label: 'Cancel',
@@ -123,7 +116,7 @@ const RegisterArtifactModal = ({
             data-testid="register-artifact"
             actions={getModalActions(formState)}
             className="artifact-register-form"
-            location={location.pathname}
+            location={location}
             onClose={handleCloseModal}
             show={isOpen}
             size={MODAL_SM}
@@ -140,15 +133,11 @@ const RegisterArtifactModal = ({
   )
 }
 
-RegisterArtifactModal.defaultProps = {
-  title: ''
-}
-
 RegisterArtifactModal.propTypes = {
   artifactKind: PropTypes.string.isRequired,
   projectName: PropTypes.string.isRequired,
   refresh: PropTypes.func.isRequired,
-  title: PropTypes.string
+  title: PropTypes.string.isRequired
 }
 
 export default connect(

@@ -1,8 +1,9 @@
 import React from 'react'
 
 import RegisterArtifactModal from '../../RegisterArtifactModal/RegisterArtifactModal'
+import RegisterModelPopUp from '../../../elements/RegisterModelPopUp/RegisterModelPopUp'
 
-// import { SECONDARY_BUTTON } from 'igz-controls/constants'
+import { SECONDARY_BUTTON, TERTIARY_BUTTON } from 'igz-controls/constants'
 
 import { ReactComponent as CreatFunctionIcon } from 'igz-controls/images/function2-icon.svg'
 import { ReactComponent as DataSetIcon } from 'igz-controls/images/overview-icon.svg'
@@ -59,25 +60,41 @@ export const getInitialCards = (projectName, navigate) => {
           handleClick: () => ({
             component: RegisterArtifactModal,
             props: {
-              //TODO: un-comment for 1.3
-              // actions: formState => [
-              //   {
-              //     disabled: formState.submitting || (formState.invalid && formState.submitFailed),
-              //     label: 'Register and view',
-              //     onClick: () => {
-              //       formState.handleSubmit()
-              //       if (!formState.invalid) {
-              //         navigate(`${base_url}/datasets`)
-              //       }
-              //     }
-              //   },
-              //   {
-              //     disabled: formState.submitting || (formState.invalid && formState.submitFailed),
-              //     label: 'Register',
-              //     onClick: formState.handleSubmit,
-              //     variant: SECONDARY_BUTTON
+              actions: (formState, handleCloseModal) => [
+                {
+                  label: 'Cancel',
+                  onClick: () => handleCloseModal(),
+                  variant: TERTIARY_BUTTON
+                },
+                {
+                  disabled: formState.submitting || (formState.invalid && formState.submitFailed),
+                  label: 'Register',
+                  onClick: async () => {
+                    await formState.handleSubmit()
+                    if (!formState.invalid) {
+                      navigate(`${base_url}/datasets`)
+                    }
+                  },
+                  variant: SECONDARY_BUTTON
+                }
+              ],
+              // TODO: un-comment for 1.3
+              // [{
+              //   disabled: formState.submitting || (formState.invalid && formState.submitFailed),
+              //   label: 'Register and view',
+              //   onClick: async () => {
+              //   await formState.handleSubmit()
+              //   if (!formState.invalid) {
+              //     navigate(`${base_url}/datasets`)
               //   }
-              // ],
+              // },
+              // {
+              //   disabled: formState.submitting || (formState.invalid && formState.submitFailed),
+              //   label: 'Register',
+              //   onClick: formState.handleSubmit,
+              //   variant: SECONDARY_BUTTON
+              // }],
+
               artifactKind: 'dataset',
               projectName,
               refresh: () => {},
@@ -95,25 +112,39 @@ export const getInitialCards = (projectName, navigate) => {
             component: RegisterArtifactModal,
             props: {
               //TODO: un-comment for 1.3
-              // actions: formState => [
-              //   {
-              //     disabled: formState.submitting || (formState.invalid && formState.submitFailed),
-              //     label: 'Register and view',
-              //     onClick: () => {
-              //       formState.handleSubmit()
-
-              //       if (!formState.invalid) {
-              //         navigate(`${base_url}/files`)
-              //       }
-              //     }
-              //   },
-              //   {
-              //     disabled: formState.submitting || (formState.invalid && formState.submitFailed),
-              //     label: 'Register',
-              //     onClick: formState.handleSubmit,
-              //     variant: SECONDARY_BUTTON
+              actions: (formState, handleCloseModal) => [
+                {
+                  label: 'Cancel',
+                  onClick: () => handleCloseModal(),
+                  variant: TERTIARY_BUTTON
+                },
+                {
+                  disabled: formState.submitting || (formState.invalid && formState.submitFailed),
+                  label: 'Register',
+                  onClick: async () => {
+                    await formState.handleSubmit()
+                    if (!formState.invalid) {
+                      navigate(`${base_url}/files`)
+                    }
+                  },
+                  variant: SECONDARY_BUTTON
+                }
+              ],
+              // [{
+              //   disabled: formState.submitting || (formState.invalid && formState.submitFailed),
+              //   label: 'Register and view',
+              // onClick: async () => {
+              //   await formState.handleSubmit()
+              //   if (!formState.invalid) {
+              //     navigate(`${base_url}/files`)
               //   }
-              // ],
+              // },
+              // {
+              //   disabled: formState.submitting || (formState.invalid && formState.submitFailed),
+              //   label: 'Register',
+              //   onClick: formState.handleSubmit,
+              //   variant: SECONDARY_BUTTON
+              // }],
               artifactKind: 'artifact',
               projectName,
               refresh: () => {},
@@ -192,7 +223,46 @@ export const getInitialCards = (projectName, navigate) => {
           id: 'registeramodel',
           icon: <RegisterModelIcon />,
           handleClick: () => ({
-            path: `${base_url}/models/models?openPanel=true`
+            component: RegisterModelPopUp,
+            props: {
+              actions: (formState, handleCloseModal) => [
+                {
+                  label: 'Cancel',
+                  onClick: () => handleCloseModal(),
+                  variant: TERTIARY_BUTTON
+                },
+                {
+                  disabled: formState.submitting || (formState.invalid && formState.submitFailed),
+                  label: 'Register',
+                  onClick: async () => {
+                    await formState.handleSubmit()
+                    if (!formState.invalid) {
+                      navigate(`${base_url}/models/models`)
+                    }
+                  },
+                  variant: SECONDARY_BUTTON
+                }
+              ],
+              // TODO: un-comment for 1.3
+              // [{
+              //   disabled: formState.submitting || (formState.invalid && formState.submitFailed),
+              //   label: 'Register and view',
+              //   onClick: async () => {
+              //   await formState.handleSubmit()
+              //   if (!formState.invalid) {
+              //     navigate(`${base_url}/datasets`)
+              //   }
+              // },
+              // {
+              //   disabled: formState.submitting || (formState.invalid && formState.submitFailed),
+              //   label: 'Register',
+              //   onClick: formState.handleSubmit,
+              //   variant: SECONDARY_BUTTON
+              // }],
+              projectName,
+              refresh: () => {}
+            },
+            type: 'modal'
           }),
           label: 'Register Model',
           tooltip: ''
