@@ -291,7 +291,7 @@ const JobWizardFunctionSelection = ({
   return (
     <div className="job-wizard__function-selection form">
       <div className="form-row">
-        <h5 className="form__step-title">Function selection</h5>
+        <h5 className="form-step-title">Function selection</h5>
       </div>
       <div className="form-row">
         This is a paragraph explaining what the user will find here and what he or she should do

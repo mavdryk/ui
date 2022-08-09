@@ -1,5 +1,5 @@
 import { chain, isEmpty, isNil, unionBy } from 'lodash'
-import { JOB_DEFAULT_OUTPUT_PATH, PANEL_DEFAULT_ACCESS_KEY, TAG_LATEST } from '../../constants'
+import { JOB_DEFAULT_OUTPUT_PATH, TAG_LATEST } from '../../constants'
 import {
   generateCpuValue,
   generateMemoryValue,
@@ -7,10 +7,11 @@ import {
   getDefaultMemoryUnit,
   getLimitsGpuType,
   getVolumeType
-} from './JobWizardSteps/JobWizardResources/JowWizardResources.utils'
+} from './JobWizardSteps/JobWizardResources/JowWizardResources.util'
 import { isEveryObjectValueEmpty } from '../../utils/isEveryObjectValueEmpty'
 import { parseEnvVariables } from '../../utils/parseEnvironmentVariables'
 import { parseKeyValues } from '../../utils'
+import { getDefaultSchedule, scheduleDataInitialState } from '../SheduleWizard/scheduleWizard.util'
 
 export const generateJobWizardData = (
   frontendSpec,
@@ -33,6 +34,9 @@ export const generateJobWizardData = (
   const volumes = getVolumes(functions)
   const volumeMounts = getVolumeMounts(functions, volumes, isEditMode)
   const gpuType = getLimitsGpuType(limits)
+  const scheduleData = defaultData?.schedule
+    ? getDefaultSchedule(defaultData.schedule)
+    : scheduleDataInitialState
 
   const currentLimits = {
     ...limits,
@@ -67,25 +71,30 @@ export const generateJobWizardData = (
       outputPath: JOB_DEFAULT_OUTPUT_PATH
     },
     parameters: {},
-    environmentVariables: parseEnvVariables(environmentVariables).map(env => {
-      const { name: key, ...rest } = env
-      return { key, ...rest }
-    }),
-    secretSources: [],
-    access_key: PANEL_DEFAULT_ACCESS_KEY,
-    nodeSelector,
+    resources: {
+      currentLimits,
+      currentRequest,
+      nodeSelector
+    },
+    advanced: {
+      access_key: true,
+      access_key_input: '',
+      environmentVariables: parseEnvVariables(environmentVariables).map(env => {
+        return { data: { key: env.name, ...env } }
+      }),
+      secretSources: []
+    },
+    scheduleData,
     volumeMounts,
-    volumes,
-    currentLimits,
-    currentRequest
+    volumes
   }
 
   if (frontendSpec.feature_flags.preemption_nodes === 'enabled') {
-    jobFormData.preemptionMode =
+    jobFormData.resources.preemptionMode =
       preemptionMode || frontendSpec.default_function_preemption_mode || 'prevent'
   }
   if (jobPriorityClassName) {
-    jobFormData.jobPriorityClassName = jobPriorityClassName
+    jobFormData.resources.jobPriorityClassName = jobPriorityClassName
   }
 
   if (!isEmpty(functionParameters)) {
@@ -339,11 +348,11 @@ export const getPredefinedParameters = functionParameters => {
         type: parameter.type ?? '',
         parameterType: 'Simple',
         value: parseParameterValue(parameter.default),
-        isChecked: true,
+        isChecked: true
       },
       doc: parameter.doc,
       isHidden: parameter.name === 'context',
-      isDefault: true,
+      isDefault: true
     }))
 }
 
@@ -356,4 +365,3 @@ const parseParameterValue = parameterValue => {
     return ''
   }
 }
-

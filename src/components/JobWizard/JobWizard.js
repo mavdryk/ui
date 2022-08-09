@@ -1,9 +1,10 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 // import PropTypes from 'prop-types'
 import arrayMutators from 'final-form-arrays'
 import { Form } from 'react-final-form'
 import { connect } from 'react-redux'
 import { isEmpty } from 'lodash'
+import { useLocation } from 'react-router-dom'
 
 import FormDirtySpy from '../../common/FormDirtySpy/FormDirtySpy'
 import JobWizardAdvanced from './JobWizardSteps/JobWizardAdvanced/JobWizardAdvanced'
@@ -19,8 +20,6 @@ import jobsActions from '../../actions/jobs'
 import projectsAction from '../../actions/projects'
 import { MODAL_FULL } from 'igz-controls/constants'
 import { setFieldState } from 'igz-controls/utils/form.util'
-
-import './jobWizard.scss'
 
 const JobWizard = ({
   defaultData,
@@ -39,6 +38,9 @@ const JobWizard = ({
   const [templates, setTemplates] = useState(functionsStore.templates)
   const [selectedCategory, setSelectedCategory] = useState('')
   const [jobAdditionalData, setJobAdditionalData] = useState({})
+  const [showSchedule, setShowSchedule] = useState(false)
+  const location = useLocation()
+  const scheduleButtonRef = useRef()
 
   const stepsConfig = useMemo(() => {
     return [
@@ -81,8 +83,11 @@ const JobWizard = ({
         getActions: ({ formState, handleOnClose }) => [
           {
             label: 'Schedule for later',
-            onClick: () => {},
-            variant: 'tertiary'
+            onClick: () => {
+              setShowSchedule(state => !state)
+            },
+            variant: 'tertiary',
+            ref: scheduleButtonRef
           },
           {
             label: 'Run',
@@ -98,11 +103,7 @@ const JobWizard = ({
   const onWizardSubmit = () => {}
 
   return (
-    <Form
-      mutators={{ ...arrayMutators, setFieldState }}
-      initialValues={{}}
-      onSubmit={submitForm}
-    >
+    <Form mutators={{ ...arrayMutators, setFieldState }} initialValues={{}} onSubmit={submitForm}>
       {formState => {
         return (
           <>
@@ -110,6 +111,7 @@ const JobWizard = ({
               formState={formState}
               id="jobWizard"
               isWizardOpen={isOpen}
+              location={location}
               onWizardResolve={onResolve}
               onWizardSubmit={onWizardSubmit}
               size={MODAL_FULL}
@@ -142,7 +144,12 @@ const JobWizard = ({
               <JobWizardDataInputs formState={formState} />
               <JobWizardParameters formState={formState} />
               <JobWizardResources formState={formState} frontendSpec={frontendSpec} />
-              <JobWizardAdvanced formState={formState} />
+              <JobWizardAdvanced
+                formState={formState}
+                scheduleButtonRef={scheduleButtonRef}
+                setShowSchedule={setShowSchedule}
+                showSchedule={showSchedule}
+              />
             </Wizard>
             <FormDirtySpy />
           </>

@@ -460,10 +460,16 @@ iframe {
     font-size: 15px;
   }
 
-  &__step-title {
+  &-step-title {
     display: block;
     margin: 0;
     font-size: 24px;
+  }
+
+  &-table-title {
+    display: block;
+    font-weight: 500;
+    font-size: 20px;
   }
 }
 

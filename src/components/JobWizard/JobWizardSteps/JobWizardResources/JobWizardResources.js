@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from 'react'
 import { OnChange } from 'react-final-form-listeners'
+import PropTypes from 'prop-types'
 
 import { FormInput, FormSelect, FormKeyValueTable } from 'igz-controls/components'
 
@@ -10,7 +11,7 @@ import {
   getSelectedCpuOption,
   getSelectedMemoryOption,
   getLimitsGpuType
-} from './JowWizardResources.utils'
+} from './JowWizardResources.util'
 
 import './jobWizardResources.scss'
 
@@ -23,8 +24,8 @@ const JobWizardResources = ({ formState, frontendSpec }) => {
   }, [frontendSpec.valid_function_priority_class_names])
 
   const gpuType = useMemo(
-    () => getLimitsGpuType(formState.values.currentLimits),
-    [formState.values.currentLimits]
+    () => getLimitsGpuType(formState.values.resources.currentLimits),
+    [formState.values.resources.currentLimits]
   )
 
   const validateMemory = (value, allValues) => {
@@ -32,11 +33,15 @@ const JobWizardResources = ({ formState, frontendSpec }) => {
       return parseInt(value) * Math.pow(unitData.root, unitData.power)
     }
 
-    const limits = Number.parseInt(allValues.currentLimits.memory)
-    const requests = Number.parseInt(allValues.currentRequest.memory)
+    const limits = Number.parseInt(allValues.resources.currentLimits.memory)
+    const requests = Number.parseInt(allValues.resources.currentRequest.memory)
 
-    const selectedLimitsOption = getSelectedMemoryOption(allValues.currentLimits.memoryUnit)
-    const selectedRequestsOption = getSelectedMemoryOption(allValues.currentRequest.memoryUnit)
+    const selectedLimitsOption = getSelectedMemoryOption(
+      allValues.resources.currentLimits.memoryUnit
+    )
+    const selectedRequestsOption = getSelectedMemoryOption(
+      allValues.resources.currentRequest.memoryUnit
+    )
 
     const isValid =
       convertToBites(limits, selectedLimitsOption) >=
@@ -48,10 +53,10 @@ const JobWizardResources = ({ formState, frontendSpec }) => {
   }
 
   const validateCpu = (value, allValues) => {
-    const limitsValue = allValues.currentLimits.cpu
-    const requestsValue = allValues.currentRequest.cpu
-    const selectedLimitsOption = getSelectedCpuOption(allValues.currentLimits.cpuUnit)
-    const selectedRequestsOption = getSelectedCpuOption(allValues.currentRequest.cpuUnit)
+    const limitsValue = allValues.resources.currentLimits.cpu
+    const requestsValue = allValues.resources.currentRequest.cpu
+    const selectedLimitsOption = getSelectedCpuOption(allValues.resources.currentLimits.cpuUnit)
+    const selectedRequestsOption = getSelectedCpuOption(allValues.resources.currentRequest.cpuUnit)
 
     const isValid =
       selectedRequestsOption.convertValue(requestsValue) <=
@@ -64,42 +69,45 @@ const JobWizardResources = ({ formState, frontendSpec }) => {
 
   const handleSelectCpuUnit = (value, type) => {
     const selectedOption = getSelectedCpuOption(value)
-    formState.form.change(`${type}.cpu`, selectedOption.onChange(formState.values[type].cpu))
+    formState.form.change(
+      `resources.${type}.cpu`,
+      selectedOption.onChange(formState.values.resources[type].cpu)
+    )
   }
 
   useEffect(() => {
     if (
-      formState.modified['currentRequest.memoryUnit'] ||
-      formState.modified['currentLimits.memoryUnit'] ||
-      formState.modified['currentRequest.memory'] ||
-      formState.modified['currentLimits.memory']
+      formState.modified['resources.currentRequest.memoryUnit'] ||
+      formState.modified['resources.currentLimits.memoryUnit'] ||
+      formState.modified['resources.currentRequest.memory'] ||
+      formState.modified['resources.currentLimits.memory']
     ) {
-      formState.form.mutators.setFieldState('currentRequest.memory', { modified: true })
-      formState.form.mutators.setFieldState('currentLimits.memory', { modified: true })
+      formState.form.mutators.setFieldState('resources.currentRequest.memory', { modified: true })
+      formState.form.mutators.setFieldState('resources.currentLimits.memory', { modified: true })
     }
 
     if (
-      formState.modified['currentRequest.cpuUnit'] ||
-      formState.modified['currentLimits.cpuUnit'] ||
-      formState.modified['currentRequest.cpu'] ||
-      formState.modified['currentLimits.cpu']
+      formState.modified['resources.currentRequest.cpuUnit'] ||
+      formState.modified['resources.currentLimits.cpuUnit'] ||
+      formState.modified['resources.currentRequest.cpu'] ||
+      formState.modified['resources.currentLimits.cpu']
     ) {
-      formState.form.mutators.setFieldState('currentRequest.cpu', { modified: true })
-      formState.form.mutators.setFieldState('currentLimits.cpu', { modified: true })
+      formState.form.mutators.setFieldState('resources.currentRequest.cpu', { modified: true })
+      formState.form.mutators.setFieldState('resources.currentLimits.cpu', { modified: true })
     }
   }, [formState.form.mutators, formState.modified])
 
   return (
     <div className="job-wizard__resources form">
       <div className="form-row">
-        <h5 className="form__step-title">Resources</h5>
+        <h5 className="form-step-title">Resources</h5>
       </div>
       <div className="form-row">
         {validFunctionPriorityClassNames.length > 0 && (
           <div className="form-col-auto resources__select">
             <FormSelect
               label="Pods priority"
-              name="jobPriorityClassName"
+              name="resources.jobPriorityClassName"
               options={validFunctionPriorityClassNames}
             />
           </div>
@@ -108,31 +116,31 @@ const JobWizardResources = ({ formState, frontendSpec }) => {
           <div className="form-col-auto resources__select">
             <FormSelect
               label="Spot Instances"
-              name="preemptionMode"
+              name="resources.preemptionMode"
               options={volumePreemptionModeOptions}
             />
           </div>
         )}
       </div>
-      <div className="form-row job-wizard__table-title">Node selection</div>
+      <div className="form-row form-table-title">Node selection</div>
       <div className="form-row">
         <FormKeyValueTable
           keyHeader="Key"
           keyLabel="Key"
           addNewItemLabel="Add a node"
-          name="nodeSelector"
+          fieldsPath="resources.nodeSelector"
           formState={formState}
           className="form-col-1"
         />
       </div>
 
-      <div className="form-row align-stretch">
+      <div className="form-row resources-inputs">
         <div className="form-col-1 resources-card">
           <div className="resources-card__title">Memory</div>
           <div className="resources-card__fields">
             <FormInput
               className="resources-card__fields-input"
-              name="currentRequest.memory"
+              name="resources.currentRequest.memory"
               label="Request"
               type="number"
               min={1}
@@ -142,14 +150,14 @@ const JobWizardResources = ({ formState, frontendSpec }) => {
             />
             <FormSelect
               className="resources-card__fields-select"
-              name="currentRequest.memoryUnit"
+              name="resources.currentRequest.memoryUnit"
               options={selectMemoryOptions.unitMemory}
             />
           </div>
           <div className="resources-card__fields">
             <FormInput
               className="resources-card__fields-input"
-              name="currentLimits.memory"
+              name="resources.currentLimits.memory"
               label="Limit"
               type="number"
               min={1}
@@ -159,7 +167,7 @@ const JobWizardResources = ({ formState, frontendSpec }) => {
             />
             <FormSelect
               className="resources-card__fields-select"
-              name="currentLimits.memoryUnit"
+              name="resources.currentLimits.memoryUnit"
               options={selectMemoryOptions.unitMemory}
             />
           </div>
@@ -169,40 +177,42 @@ const JobWizardResources = ({ formState, frontendSpec }) => {
           <div className="resources-card__fields">
             <FormInput
               className="resources-card__fields-input"
-              name="currentRequest.cpu"
+              name="resources.currentRequest.cpu"
               label="Request"
               type="number"
-              min={getSelectedCpuOption(formState.values.currentRequest.cpuUnit)?.minValue}
-              step={getSelectedCpuOption(formState.values.currentRequest.cpuUnit)?.step}
+              min={
+                getSelectedCpuOption(formState.values.resources.currentRequest.cpuUnit)?.minValue
+              }
+              step={getSelectedCpuOption(formState.values.resources.currentRequest.cpuUnit)?.step}
               validator={validateCpu}
               required
               invalidText={`Request must be less than or equal to Limit and not be less than ${
-                getSelectedCpuOption(formState.values.currentRequest.cpuUnit)?.minValue
+                getSelectedCpuOption(formState.values.resources.currentRequest.cpuUnit)?.minValue
               }`}
             />
             <FormSelect
               className="resources-card__fields-select"
-              name="currentRequest.cpuUnit"
+              name="resources.currentRequest.cpuUnit"
               options={selectMemoryOptions.unitCpu}
             />
           </div>
           <div className="resources-card__fields">
             <FormInput
               className="resources-card__fields-input"
-              name="currentLimits.cpu"
+              name="resources.currentLimits.cpu"
               label="Limit"
               type="number"
-              min={getSelectedCpuOption(formState.values.currentLimits.cpuUnit)?.minValue}
-              step={getSelectedCpuOption(formState.values.currentLimits.cpuUnit)?.step}
+              min={getSelectedCpuOption(formState.values.resources.currentLimits.cpuUnit)?.minValue}
+              step={getSelectedCpuOption(formState.values.resources.currentLimits.cpuUnit)?.step}
               validator={validateCpu}
               required
               invalidText={`Limit must be bigger than or equal to Request and not be less than ${
-                getSelectedCpuOption(formState.values.currentLimits.cpuUnit)?.minValue
+                getSelectedCpuOption(formState.values.resources.currentLimits.cpuUnit)?.minValue
               }`}
             />
             <FormSelect
               className="resources-card__fields-select"
-              name="currentLimits.cpuUnit"
+              name="resources.currentLimits.cpuUnit"
               options={selectMemoryOptions.unitCpu}
             />
           </div>
@@ -212,7 +222,7 @@ const JobWizardResources = ({ formState, frontendSpec }) => {
           <div className="resources-card__fields">
             <FormInput
               className="resources-card__fields-input gpu"
-              name={`currentLimits[${gpuType}]`}
+              name={`resources.currentLimits[${gpuType}]`}
               label="Limit"
               type="number"
               min={1}
@@ -220,18 +230,19 @@ const JobWizardResources = ({ formState, frontendSpec }) => {
           </div>
         </div>
       </div>
-      <OnChange name="currentRequest.cpuUnit">
+      <OnChange name="resources.currentRequest.cpuUnit">
         {value => handleSelectCpuUnit(value, 'currentRequest')}
       </OnChange>
-      <OnChange name="currentLimits.cpuUnit">
+      <OnChange name="resources.currentLimits.cpuUnit">
         {value => handleSelectCpuUnit(value, 'currentLimits')}
       </OnChange>
     </div>
   )
 }
 
-JobWizardResources.defaultProps = {}
-
-JobWizardResources.propTypes = {}
+JobWizardResources.propTypes = {
+  formState: PropTypes.shape({}).isRequired,
+  frontendSpec: PropTypes.shape({}).isRequired
+}
 
 export default JobWizardResources

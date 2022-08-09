@@ -6,7 +6,7 @@ const JobWizardDataInputs = ({formState}) => {
   return (
     <div className="job-wizard__data-inputs form">
       <div className="form-row">
-        <h5 className="form__step-title">Data Inputs</h5>
+        <h5 className="form-step-title">Data Inputs</h5>
       </div>
       <div className="form-row">
         This is a paragraph explaining what the user will find here and what he or she should do
