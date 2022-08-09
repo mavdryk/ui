@@ -424,10 +424,9 @@ iframe {
     }
   }
 
-  .form {
-    &-row {
-      display: flex;
-      align-items: flex-end;
+  &-row {
+    display: flex;
+    align-items: flex-end;
       margin-bottom: 20px;
 
       &.align-stretch {
@@ -435,14 +434,14 @@ iframe {
       }
     }
 
-    &-col {
-      &-1 {
-        flex-grow: 1;
-      }
+  &-col {
+    &-1 {
+      flex-grow: 1;
+    }
 
-      &-2 {
-        flex-grow: 2;
-      }
+    &-2 {
+      flex-grow: 2;
+    }
 
       &-3 {
         flex-grow: 3;
@@ -457,15 +456,14 @@ iframe {
       }
     }
 
-    &-text {
-      font-size: 15px;
+  &-text {
+    font-size: 15px;
     }
 
     &__step-title {
       display: block;
       margin: 0;
-      font-size: 24px;
-    }
+    font-size: 24px;
   }
 }
 
