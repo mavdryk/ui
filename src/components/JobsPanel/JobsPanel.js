@@ -117,8 +117,6 @@ const JobsPanel = ({
   useEffect(() => {
     if (panelState.editMode) {
       if (panelState.previousPanelData.titleInfo.method !== panelState.currentFunctionInfo.method) {
-        // when selecting a new method
-        console.log('generateTableData')
         generateTableData(
           panelState.currentFunctionInfo.method,
           selectedFunction,

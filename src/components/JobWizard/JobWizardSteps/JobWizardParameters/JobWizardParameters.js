@@ -1,6 +1,7 @@
 import React from 'react'
 
 import FormParametersTable from '../../../../common/FormParametersTable/FormParametersTable'
+import FormHyperParametersTable from '../../../../common/FormHyperParametersTable/FormHyperParametersTable'
 
 import './jobWizardParameters.scss'
 
@@ -15,6 +16,10 @@ const JobWizardParameters = ({ formState }) => {
         next, here we can throw in all the jargon words that normal people would glaze over.
       </div>
       <FormParametersTable formState={formState} fieldsPath="parameters.parametersTable" />
+        <div className="form-row hyper-parameters">
+            <h6 className="form-step-subtitle">Hyper parameters</h6>
+        </div>
+        <FormHyperParametersTable formState={formState} fieldsPath="parameters.hyperParameters" />
     </div>
   )
 }

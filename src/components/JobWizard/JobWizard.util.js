@@ -98,9 +98,15 @@ export const generateJobWizardData = (
   }
 
   if (!isEmpty(functionParameters)) {
-    jobFormData.parameters.parametersTable = {
-      predefined: getPredefinedParameters(functionParameters),
-      custom: []
+    jobFormData.parameters = {
+      parametersTable: {
+        predefined: getPredefinedParameters(functionParameters),
+        custom: []
+      },
+      hyperParameters: {
+        tuningStrategy: DEFAULT_TUNING_STRATEGY,
+        criteria: DEFAULT_SELECTOR_CRITERIA
+      }
     }
     jobFormData.dataInputs.dataInputsTable = getDataInputs(functionParameters)
   }
@@ -365,3 +371,6 @@ const parseParameterValue = parameterValue => {
     return ''
   }
 }
+
+const DEFAULT_SELECTOR_CRITERIA = 'max'
+const DEFAULT_TUNING_STRATEGY = 'list'
