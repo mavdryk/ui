@@ -27,13 +27,13 @@ const FormParametersTable = ({
   fields,
   fieldsPath,
   index,
-  isParameterTypeDisabled,
+  isHyperOptionDisabled,
   rowPath,
   uniquenessValidator
 }) => {
   const parameterTypeOptions = useMemo(() => {
-    return getParameterTypeOptions(isParameterTypeDisabled)
-  }, [isParameterTypeDisabled])
+    return getParameterTypeOptions(isHyperOptionDisabled)
+  }, [isHyperOptionDisabled])
   const [fieldData, setFieldData] = useState(fields.value[index])
   const tableRowClassNames = classnames(
     'form-table__row',
