@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { FieldArray } from 'react-final-form-arrays'
@@ -9,7 +9,7 @@ import FormParametersRow from './FormParametersRow/FormParametersRow'
 import { Tooltip, TextTooltipTemplate } from 'igz-controls/components'
 import { useFormTable } from 'igz-controls/hooks/useFormTable.hook'
 
-const FormParametersTable = ({ disabled, formState, fieldsPath }) => {
+const FormParametersTable = ({ disabled, fieldsPath, formState, isParameterTypeDisabled, setIsParametersEditModeEnabled }) => {
   const predefinedPath = `${fieldsPath}.predefined`
   const customPath = `${fieldsPath}.custom`
   const tableClassNames = classnames('form-table', disabled && 'disabled')
@@ -28,6 +28,10 @@ const FormParametersTable = ({ disabled, formState, fieldsPath }) => {
 
     return !predefinedContainsName && !customContainsName
   }
+
+  useEffect(() => {
+    setIsParametersEditModeEnabled(Boolean(editingItem))
+  }, [editingItem, setIsParametersEditModeEnabled])
 
   return (
     <div className={tableClassNames}>
@@ -67,6 +71,7 @@ const FormParametersTable = ({ disabled, formState, fieldsPath }) => {
                     fields={fields}
                     fieldsPath={predefinedPath}
                     index={index}
+                    isParameterTypeDisabled={isParameterTypeDisabled}
                     key={rowPath}
                     rowPath={rowPath}
                     uniquenessValidator={uniquenessValidator}
@@ -98,6 +103,7 @@ const FormParametersTable = ({ disabled, formState, fieldsPath }) => {
                     fields={fields}
                     fieldsPath={customPath}
                     index={index}
+                    isParameterTypeDisabled={isParameterTypeDisabled}
                     key={rowPath}
                     rowPath={rowPath}
                     uniquenessValidator={uniquenessValidator}
