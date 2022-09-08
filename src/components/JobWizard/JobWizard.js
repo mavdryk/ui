@@ -19,6 +19,8 @@ import { Wizard } from 'igz-controls/components'
 import functionsActions from '../../actions/functions'
 import jobsActions from '../../actions/jobs'
 import projectsAction from '../../actions/projects'
+import artifactsAction from '../../actions/artifacts'
+import featureStoreActions from '../../actions/featureStore'
 import { MODAL_FULL } from 'igz-controls/constants'
 import { setFieldState } from 'igz-controls/utils/form.util'
 import { useModalBlockHistory } from '../../hooks/useModalBlockHistory.hook'
@@ -26,12 +28,17 @@ import { useMode } from '../../hooks/mode.hook'
 
 const JobWizard = ({
   defaultData,
+  fetchArtifact,
+  fetchArtifacts,
+  fetchFeatureVector,
+  fetchFeatureVectors,
   frontendSpec,
   functionsStore,
   isEditMode,
   isOpen,
   onResolve,
-  params
+  params,
+  projectStore
 }) => {
   const formRef = React.useRef(
     createForm({
@@ -153,7 +160,14 @@ const JobWizard = ({
                 templatesCategories={templatesCategories}
               />
               <JobWizardJobDetails formState={formState} jobAdditionalData={jobAdditionalData} />
-              <JobWizardDataInputs formState={formState} />
+              <JobWizardDataInputs
+                fetchArtifact={fetchArtifact}
+                fetchArtifacts={fetchArtifacts}
+                fetchFeatureVector={fetchFeatureVector}
+                fetchFeatureVectors={fetchFeatureVectors}
+                formState={formState}
+                projectStore={projectStore}
+              />
               <JobWizardParameters formState={formState} />
               <JobWizardResources formState={formState} frontendSpec={frontendSpec} />
               <JobWizardAdvanced
@@ -192,6 +206,8 @@ export default connect(
     projectStore
   }),
   {
+    ...artifactsAction,
+    ...featureStoreActions,
     ...functionsActions,
     ...jobsActions,
     ...projectsAction

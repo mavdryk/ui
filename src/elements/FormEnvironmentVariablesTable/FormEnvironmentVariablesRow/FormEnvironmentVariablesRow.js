@@ -147,11 +147,23 @@ const FormEnvironmentVariablesRow = ({
       )}
       <OnChange name={`${rowPath}.data.type`}>
         {value => {
-          if (value === ENV_VARIABLE_TYPE_SECRET) {
-            setFieldValue(`${rowPath}.data.value`, '')
-          } else {
-            setFieldValue(`${rowPath}.data.secretName`, '')
-            setFieldValue(`${rowPath}.data.secretKey`, '')
+          if (editingItem) {
+            const currentField = fields.value[index].data
+
+            if (value === ENV_VARIABLE_TYPE_SECRET) {
+              setFieldValue(`${rowPath}.data`, {
+                key: currentField.key,
+                type: currentField.type,
+                secretName: '',
+                secretKey: ''
+              })
+            } else {
+              setFieldValue(`${rowPath}.data`, {
+                key: currentField.key,
+                type: currentField.type,
+                value: ''
+              })
+            }
           }
         }}
       </OnChange>

@@ -21,6 +21,7 @@ import {
 import { isEveryObjectValueEmpty } from '../../utils/isEveryObjectValueEmpty'
 import { parseKeyValues } from '../../utils'
 import { getDefaultSchedule, scheduleDataInitialState } from '../SheduleWizard/scheduleWizard.util'
+import { comboboxFieldsInitialState } from '../../elements/FormDataInputsTable/formDataInputsTable.util'
 
 export const generateJobWizardData = (
   frontendSpec,
@@ -77,7 +78,8 @@ export const generateJobWizardData = (
     },
     dataInputs: {
       inputPath: undefined,
-      outputPath: JOB_DEFAULT_OUTPUT_PATH
+      outputPath: JOB_DEFAULT_OUTPUT_PATH,
+      comboboxFields: comboboxFieldsInitialState
     },
     parameters: {},
     resources: {
@@ -417,19 +419,15 @@ export const getDataInputs = functionParameters => {
   return functionParameters
     .filter(dataInputs => dataInputs.type === 'DataItem')
     .map(input => {
-      const inputPath = {
-        pathType: input.path?.replace(/:\/\/.*$/g, '://') ?? ''
-      }
-
-      inputPath.value = input.path?.replace(/.*:\/\//g, '') ?? ''
-
       return {
         doc: input.doc,
         isDefault: true,
         data: {
           name: input.name,
-          path: {
-            ...inputPath
+          path: input.path ?? '',
+          fieldInfo: {
+            pathType: input.path?.replace(/:\/\/.*$/g, '://') ?? '',
+            value: input.path?.replace(/.*:\/\//g, '') ?? ''
           }
         }
       }
@@ -466,10 +464,7 @@ const parseParameterValue = parameterValue => {
 const parseEnvironmentVariables = (envVariables, isStagingMode) => {
   return envVariables.map(envVariable => {
     let env = {
-      key: envVariable.name,
-      value: '',
-      secretName: '',
-      secretKey: ''
+      key: envVariable.name
     }
 
     if (envVariable?.valueFrom?.secretKeyRef) {

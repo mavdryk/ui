@@ -183,5 +183,20 @@ export const DAYS_OF_WEEK = PropTypes.arrayOf(
   })
 )
 
+export const COMBOBOX_FIELDS = PropTypes.shape({
+  projects: PropTypes.array.isRequired,
+  artifacts: PropTypes.array.isRequired,
+  artifactsReferences: PropTypes.array.isRequired,
+  featureVectors: PropTypes.array.isRequired,
+  featureVectorsReferences: PropTypes.array.isRequired,
+  comboboxMatches: PropTypes.array.isRequired,
+  inputStorePathTypeEntered: PropTypes.bool.isRequired,
+  inputProjectPathEntered: PropTypes.bool.isRequired,
+  inputProjectItemPathEntered: PropTypes.bool.isRequired,
+  inputProjectItemReferencePathEntered: PropTypes.bool.isRequired,
+  storePathType: PropTypes.string.isRequired,
+  project: PropTypes.string.isRequired
+})
+
 export const SLIDER_STYLE_1 = 'style1'
 export const SLIDER_STYLE_2 = 'style2'
