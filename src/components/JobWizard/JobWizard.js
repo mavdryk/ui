@@ -19,26 +19,21 @@ import { Wizard } from 'igz-controls/components'
 import functionsActions from '../../actions/functions'
 import jobsActions from '../../actions/jobs'
 import projectsAction from '../../actions/projects'
-import artifactsAction from '../../actions/artifacts'
-import featureStoreActions from '../../actions/featureStore'
 import { MODAL_FULL } from 'igz-controls/constants'
 import { setFieldState } from 'igz-controls/utils/form.util'
 import { useModalBlockHistory } from '../../hooks/useModalBlockHistory.hook'
 import { useMode } from '../../hooks/mode.hook'
 
+import './jobWizard.scss'
+
 const JobWizard = ({
   defaultData,
-  fetchArtifact,
-  fetchArtifacts,
-  fetchFeatureVector,
-  fetchFeatureVectors,
   frontendSpec,
   functionsStore,
   isEditMode,
   isOpen,
   onResolve,
-  params,
-  projectStore
+  params
 }) => {
   const formRef = React.useRef(
     createForm({
@@ -160,14 +155,7 @@ const JobWizard = ({
                 templatesCategories={templatesCategories}
               />
               <JobWizardJobDetails formState={formState} jobAdditionalData={jobAdditionalData} />
-              <JobWizardDataInputs
-                fetchArtifact={fetchArtifact}
-                fetchArtifacts={fetchArtifacts}
-                fetchFeatureVector={fetchFeatureVector}
-                fetchFeatureVectors={fetchFeatureVectors}
-                formState={formState}
-                projectStore={projectStore}
-              />
+              <JobWizardDataInputs formState={formState} />
               <JobWizardParameters formState={formState} />
               <JobWizardResources formState={formState} frontendSpec={frontendSpec} />
               <JobWizardAdvanced
@@ -202,12 +190,9 @@ JobWizard.propTypes = {
 export default connect(
   ({ appStore, functionsStore, projectStore }) => ({
     frontendSpec: appStore.frontendSpec,
-    functionsStore,
-    projectStore
+    functionsStore
   }),
   {
-    ...artifactsAction,
-    ...featureStoreActions,
     ...functionsActions,
     ...jobsActions,
     ...projectsAction

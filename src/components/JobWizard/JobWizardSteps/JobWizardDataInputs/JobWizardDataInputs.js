@@ -4,14 +4,7 @@ import PropTypes from 'prop-types'
 import { FormInput } from 'igz-controls/components'
 import FormDataInputsTable from '../../../../elements/FormDataInputsTable/FormDataInputsTable'
 
-const JobWizardDataInputs = ({
-  fetchArtifact,
-  fetchArtifacts,
-  fetchFeatureVector,
-  fetchFeatureVectors,
-  formState,
-  projectStore
-}) => {
+const JobWizardDataInputs = ({ formState }) => {
   return (
     <div className="job-wizard__data-inputs form">
       <div className="form-row">
@@ -24,13 +17,8 @@ const JobWizardDataInputs = ({
       <div className="form-row">
         <FormDataInputsTable
           className="form-col-1"
-          fetchArtifact={fetchArtifact}
-          fetchArtifacts={fetchArtifacts}
-          fetchFeatureVector={fetchFeatureVector}
-          fetchFeatureVectors={fetchFeatureVectors}
           fieldsPath="dataInputs.dataInputsTable"
           formState={formState}
-          projectStore={projectStore}
         />
       </div>
       <div className="form-row">
@@ -44,6 +32,8 @@ const JobWizardDataInputs = ({
     </div>
   )
 }
+
+JobWizardDataInputs.defaultProps = {}
 
 JobWizardDataInputs.propTypes = {
   formState: PropTypes.shape({}).isRequired

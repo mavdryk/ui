@@ -4,207 +4,231 @@ import PropTypes from 'prop-types'
 import { OnChange } from 'react-final-form-listeners'
 import { isNil, pick, uniqBy } from 'lodash'
 import { useParams } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 
 import { FormInput, TextTooltipTemplate, Tip, Tooltip, FormCombobox } from 'igz-controls/components'
 import FormRowActions from 'igz-controls/elements/FormRowActions/FormRowActions'
 
 import { FORM_TABLE_EDITING_ITEM } from 'igz-controls/types'
 import {
+  dataInputInitialState,
   comboboxSelectList,
-  handleStoreInputPathChange,
-  pathPlaceholders,
-  pathTips,
-  generateComboboxMatchesList,
-  isPathInputInvalid,
-  comboboxFieldsInitialState
-} from '../formDataInputsTable.util'
-import { MLRUN_STORAGE_INPUT_PATH_SCHEME } from '../../../constants'
-import {
   generateArtifactsList,
   generateArtifactsReferencesList,
-  generateProjectsList
-} from '../../../utils/panelPathScheme'
+  generateComboboxMatchesList,
+  generateProjectsList,
+  handleStoreInputPathChange,
+  isPathInputInvalid,
+  pathPlaceholders,
+  pathTips
+} from '../formDataInputsTable.util'
+import { MLRUN_STORAGE_INPUT_PATH_SCHEME } from '../../../constants'
 import { getFeatureReference } from '../../../utils/resources'
-import { COMBOBOX_FIELDS } from '../../../types'
+import { DATA_INPUT_STATE } from '../../../types'
+import artifactsAction from '../../../actions/artifacts'
+import featureStoreActions from '../../../actions/featureStore'
 
 const FormDataInputsRow = ({
   applyChanges,
-  comboboxFields,
+  dataInputState,
   deleteRow,
   disabled,
   discardOrDelete,
   editingItem,
   enterEditMode,
-  fetchArtifact,
-  fetchArtifacts,
-  fetchFeatureVector,
-  fetchFeatureVectors,
   fields,
   fieldsPath,
   index,
   projectStore,
   rowPath,
+  setDataInputState,
   setFieldState,
   setFieldValue,
   uniquenessValidator
 }) => {
   const [fieldData, setFieldData] = useState(fields.value[index])
   const params = useParams()
+  const dispatch = useDispatch()
 
   const tableRowClassNames = classnames(
     'form-table__row',
     fieldsPath === editingItem?.ui?.fieldsPath && editingItem?.ui?.index === index && 'active'
   )
 
+  const handleOnChange = (selectValue, inputValue) => {
+    if (isNil(inputValue)) {
+      setFieldState(`${rowPath}.data.path`, { modified: false })
+    }
+
+    if (selectValue === MLRUN_STORAGE_INPUT_PATH_SCHEME && !isNil(inputValue)) {
+      handleStoreInputPathChange(dataInputState, setDataInputState, inputValue)
+    }
+  }
+
+  const validatePath = allValues => {
+    const { pathType, value } = pick(allValues.dataInputs.dataInputsTable[index].data.fieldInfo, [
+      'pathType',
+      'value'
+    ])
+
+    return isPathInputInvalid(pathType, value)
+  }
+
   useEffect(() => {
     setFieldData(fields.value[index])
   }, [fields.value, index])
 
   useEffect(() => {
-    if (comboboxFields.inputStorePathTypeEntered && comboboxFields.projects.length === 0) {
-      setFieldValue(
-        'dataInputs.comboboxFields.projects',
-        generateProjectsList(projectStore.projectsNames.data, params.projectName)
-      )
+    if (dataInputState.inputStorePathTypeEntered && dataInputState.projects.length === 0) {
+      setDataInputState(prev => ({
+        ...prev,
+        projects: generateProjectsList(projectStore.projectsNames.data, params.projectName)
+      }))
     }
   }, [
-    comboboxFields.inputStorePathTypeEntered,
-    comboboxFields.projects.length,
+    dataInputState.inputStorePathTypeEntered,
+    dataInputState.projects.length,
     params.projectName,
     projectStore.projectsNames.data,
-    setFieldValue
+    setDataInputState
   ])
 
   useEffect(() => {
     if (fieldData.data.fieldInfo.pathType === MLRUN_STORAGE_INPUT_PATH_SCHEME) {
-      setFieldValue(
-        'dataInputs.comboboxFields.comboboxMatches',
-        generateComboboxMatchesList(
-          comboboxFields.artifacts,
-          comboboxFields.artifactsReferences,
-          comboboxFields.featureVectors,
-          comboboxFields.featureVectorsReferences,
-          comboboxFields.inputProjectItemPathEntered,
-          comboboxFields.inputProjectItemReferencePathEntered,
-          comboboxFields.inputProjectPathEntered,
-          comboboxFields.inputStorePathTypeEntered,
-          comboboxFields.project,
-          comboboxFields.projectItem,
-          comboboxFields.projectItemReference,
-          comboboxFields.projects,
-          comboboxFields.storePathType
+      setDataInputState(prev => ({
+        ...prev,
+        comboboxMatches: generateComboboxMatchesList(
+          dataInputState.artifacts,
+          dataInputState.artifactsReferences,
+          dataInputState.featureVectors,
+          dataInputState.featureVectorsReferences,
+          dataInputState.inputProjectItemPathEntered,
+          dataInputState.inputProjectItemReferencePathEntered,
+          dataInputState.inputProjectPathEntered,
+          dataInputState.inputStorePathTypeEntered,
+          dataInputState.project,
+          dataInputState.projectItem,
+          dataInputState.projectItemReference,
+          dataInputState.projects,
+          dataInputState.storePathType
         )
-      )
+      }))
     }
   }, [
-    comboboxFields.artifacts,
-    comboboxFields.artifactsReferences,
-    comboboxFields.featureVectors,
-    comboboxFields.featureVectorsReferences,
-    comboboxFields.inputProjectItemPathEntered,
-    comboboxFields.inputProjectItemReferencePathEntered,
-    comboboxFields.inputProjectPathEntered,
-    comboboxFields.inputStorePathTypeEntered,
-    comboboxFields.project,
-    comboboxFields.projectItem,
-    comboboxFields.projectItemReference,
-    comboboxFields.projects,
-    comboboxFields.storePathType,
+    dataInputState.artifacts,
+    dataInputState.artifactsReferences,
+    dataInputState.featureVectors,
+    dataInputState.featureVectorsReferences,
+    dataInputState.inputProjectItemPathEntered,
+    dataInputState.inputProjectItemReferencePathEntered,
+    dataInputState.inputProjectPathEntered,
+    dataInputState.inputStorePathTypeEntered,
+    dataInputState.project,
+    dataInputState.projectItem,
+    dataInputState.projectItemReference,
+    dataInputState.projects,
+    dataInputState.storePathType,
     fieldData.data.fieldInfo.pathType,
-    setFieldValue
+    setDataInputState
   ])
 
   useEffect(() => {
     if (
-      comboboxFields.inputProjectPathEntered &&
-      comboboxFields.storePathType &&
-      comboboxFields.project
+      dataInputState.inputProjectPathEntered &&
+      dataInputState.storePathType &&
+      dataInputState.project
     ) {
-      if (comboboxFields.storePathType === 'artifacts' && comboboxFields.artifacts.length === 0) {
-        fetchArtifacts(comboboxFields.project).then(artifacts => {
-          setFieldValue('dataInputs.comboboxFields.artifacts', generateArtifactsList(artifacts))
+      if (dataInputState.storePathType === 'artifacts' && dataInputState.artifacts.length === 0) {
+        dispatch(artifactsAction.fetchArtifacts(dataInputState.project)).then(artifacts => {
+          setDataInputState(prev => ({
+            ...prev,
+            artifacts: generateArtifactsList(artifacts)
+          }))
         })
       } else if (
-        comboboxFields.storePathType === 'feature-vectors' &&
-        comboboxFields.featureVectors.length === 0
+        dataInputState.storePathType === 'feature-vectors' &&
+        dataInputState.featureVectors.length === 0
       ) {
-        fetchFeatureVectors(comboboxFields.project).then(featureVectors => {
-          const featureVectorsList = uniqBy(featureVectors, 'metadata.name')
-            .map(featureVector => ({
-              label: featureVector.metadata.name,
-              id: featureVector.metadata.name
-            }))
-            .sort((prevFeatureVector, nextFeatureVector) =>
-              prevFeatureVector.id.localeCompare(nextFeatureVector.id)
-            )
+        dispatch(featureStoreActions.fetchFeatureVectors(dataInputState.project)).then(
+          featureVectors => {
+            const featureVectorsList = uniqBy(featureVectors, 'metadata.name')
+              .map(featureVector => ({
+                label: featureVector.metadata.name,
+                id: featureVector.metadata.name
+              }))
+              .sort((prevFeatureVector, nextFeatureVector) =>
+                prevFeatureVector.id.localeCompare(nextFeatureVector.id)
+              )
 
-          setFieldValue('dataInputs.comboboxFields.featureVectors', featureVectorsList)
-        })
+            setDataInputState(prev => ({
+              ...prev,
+              featureVectors: featureVectorsList
+            }))
+          }
+        )
       }
     }
   }, [
-    comboboxFields.artifacts.length,
-    comboboxFields.featureVectors.length,
-    comboboxFields.inputProjectPathEntered,
-    comboboxFields.project,
-    comboboxFields.storePathType,
-    fetchArtifacts,
-    fetchFeatureVectors,
-    fieldsPath,
-    setFieldValue
+    dataInputState.artifacts.length,
+    dataInputState.featureVectors.length,
+    dataInputState.inputProjectPathEntered,
+    dataInputState.project,
+    dataInputState.storePathType,
+    dispatch,
+    setDataInputState
   ])
 
   useEffect(() => {
-    const storePathType = comboboxFields.storePathType
-    const projectName = comboboxFields.project
-    const projectItem = comboboxFields.projectItem
+    const storePathType = dataInputState.storePathType
+    const projectName = dataInputState.project
+    const projectItem = dataInputState.projectItem
 
-    if (comboboxFields.inputProjectItemPathEntered && storePathType && projectName && projectItem) {
-      if (storePathType === 'artifacts' && comboboxFields.artifactsReferences.length === 0) {
-        fetchArtifact(projectName, projectItem).then(artifacts => {
+    if (dataInputState.inputProjectItemPathEntered && storePathType && projectName && projectItem) {
+      if (storePathType === 'artifacts' && dataInputState.artifactsReferences.length === 0) {
+        dispatch(artifactsAction.fetchArtifact(projectName, projectItem)).then(artifacts => {
           if (artifacts.length > 0 && artifacts[0].data) {
-            setFieldValue(
-              'dataInputs.comboboxFields.artifactsReferences',
-              generateArtifactsReferencesList(artifacts[0].data)
-            )
+            setDataInputState(prev => ({
+              ...prev,
+              artifactsReferences: generateArtifactsReferencesList(artifacts[0].data)
+            }))
           }
         })
       } else if (
         storePathType === 'feature-vectors' &&
-        comboboxFields.featureVectorsReferences.length === 0
+        dataInputState.featureVectorsReferences.length === 0
       ) {
-        fetchFeatureVector(projectName, projectItem).then(featureVectors => {
-          const featureVectorsReferencesList = featureVectors
-            .map(featureVector => {
-              let featureVectorReference = getFeatureReference(featureVector.metadata)
+        dispatch(featureStoreActions.fetchFeatureVector(projectName, projectItem)).then(
+          featureVectors => {
+            const featureVectorsReferencesList = featureVectors
+              .map(featureVector => {
+                let featureVectorReference = getFeatureReference(featureVector.metadata)
 
-              return {
-                label: featureVectorReference,
-                id: featureVectorReference,
-                customDelimiter: featureVectorReference[0]
-              }
-            })
-            .filter(featureVector => featureVector.label !== '')
-            .sort((prevRef, nextRef) => prevRef.id.localeCompare(nextRef.id))
+                return {
+                  label: featureVectorReference,
+                  id: featureVectorReference,
+                  customDelimiter: featureVectorReference[0]
+                }
+              })
+              .filter(featureVector => featureVector.label !== '')
+              .sort((prevRef, nextRef) => prevRef.id.localeCompare(nextRef.id))
 
-          setFieldValue(
-            'dataInputs.comboboxFields.featureVectorsReferences',
-            featureVectorsReferencesList
-          )
-        })
+            setDataInputState(prev => ({
+              ...prev,
+              featureVectorsReferences: featureVectorsReferencesList
+            }))
+          }
+        )
       }
     }
   }, [
-    comboboxFields.artifactsReferences.length,
-    comboboxFields.featureVectorsReferences.length,
-    comboboxFields.inputProjectItemPathEntered,
-    comboboxFields.project,
-    comboboxFields.projectItem,
-    comboboxFields.storePathType,
-    fetchArtifact,
-    fetchFeatureVector,
-    fieldsPath,
-    setFieldValue
+    dataInputState.artifactsReferences.length,
+    dataInputState.featureVectorsReferences.length,
+    dataInputState.inputProjectItemPathEntered,
+    dataInputState.project,
+    dataInputState.projectItem,
+    dataInputState.storePathType,
+    dispatch,
+    setDataInputState
   ])
 
   return (
@@ -231,51 +255,31 @@ const FormDataInputsRow = ({
           </div>
           <div className="form-table__cell form-table__cell_1">
             <FormCombobox
-              name={`${rowPath}.data.path`}
-              selectOptions={comboboxSelectList}
               density="dense"
-              required
+              hideSearchInput={!dataInputState.inputStorePathTypeEntered}
               inputDefaultValue={editingItem.data.fieldInfo?.value}
+              inputPlaceholder={pathPlaceholders[fieldData.data.fieldInfo?.pathType]}
               invalidText={`Field must be in "${
-                pathTips[fieldData.data.fieldInfo?.pathType]
+                pathTips(dataInputState.storePathType)[fieldData.data.fieldInfo?.pathType]
               }" format`}
+              maxSuggestedMatches={
+                fieldData.data.fieldInfo.pathType === MLRUN_STORAGE_INPUT_PATH_SCHEME ? 3 : 2
+              }
+              name={`${rowPath}.data.path`}
+              onChange={(selectValue, inputValue) => handleOnChange(selectValue, inputValue)}
+              required
               selectDefaultValue={comboboxSelectList.find(
                 option =>
                   editingItem.data.path && option.id === editingItem.data.fieldInfo?.pathType
               )}
-              validator={(fieldValue, allValues) => {
-                const { pathType, value } = pick(
-                  allValues.dataInputs.dataInputsTable[index].data.fieldInfo,
-                  ['pathType', 'value']
-                )
-
-                return isPathInputInvalid(pathType, value)
-              }}
-              onChange={(selectValue, inputValue) => {
-                if (!inputValue && !fieldData.data.fieldInfo?.value) {
-                  setFieldState(`${rowPath}.data.path`, { modified: false })
-                }
-
-                if (selectValue === MLRUN_STORAGE_INPUT_PATH_SCHEME && !isNil(inputValue)) {
-                  handleStoreInputPathChange(
-                    comboboxFields,
-                    'dataInputs.comboboxFields',
-                    setFieldValue,
-                    inputValue
-                  )
-                }
-              }}
-              inputPlaceholder={pathPlaceholders[fieldData.data.fieldInfo?.pathType]}
+              selectOptions={comboboxSelectList}
               selectPlaceholder="Path Scheme"
               suggestionList={
                 fieldData.data.fieldInfo.pathType === MLRUN_STORAGE_INPUT_PATH_SCHEME
-                  ? comboboxFields.comboboxMatches
+                  ? dataInputState.comboboxMatches
                   : []
               }
-              maxSuggestedMatches={
-                fieldData.data.fieldInfo.pathType === MLRUN_STORAGE_INPUT_PATH_SCHEME ? 3 : 2
-              }
-              hideSearchInput={!comboboxFields.inputStorePathTypeEntered}
+              validator={(fieldValue, allValues) => validatePath(allValues)}
             />
           </div>
           <FormRowActions
@@ -292,17 +296,22 @@ const FormDataInputsRow = ({
           className={tableRowClassNames}
           key={index}
           onClick={event => {
-            setFieldValue('dataInputs.comboboxFields', comboboxFieldsInitialState)
+            setDataInputState(dataInputInitialState)
             handleStoreInputPathChange(
-              comboboxFields,
-              'dataInputs.comboboxFields',
-              setFieldValue,
+              dataInputState,
+              setDataInputState,
               fields.value[index].data.fieldInfo.value
             )
             enterEditMode(event, fields, fieldsPath, index)
           }}
         >
-          <div className={classnames('form-table__cell', 'form-table__cell_1')}>
+          <div
+            className={classnames(
+              'form-table__cell',
+              'form-table__cell_1',
+              'form-table__name-cell'
+            )}
+          >
             <Tooltip template={<TextTooltipTemplate text={fieldData.data.name} />}>
               {fieldData.data.name}
             </Tooltip>
@@ -325,9 +334,20 @@ const FormDataInputsRow = ({
       )}
       <OnChange name={`${rowPath}.data.path`}>
         {value => {
-          if (value.length !== 0) {
-            setFieldValue(`${rowPath}.data.fieldInfo.value`, value.replace(/.*:[/]{2,3}/g, ''))
-            setFieldValue(`${rowPath}.data.fieldInfo.pathType`, value.match(/^\w*:[/]{2,3}/)[0])
+          if (editingItem) {
+            if (value.length !== 0) {
+              setFieldValue(`${rowPath}.data.fieldInfo.value`, value.replace(/.*:[/]{2,3}/g, ''))
+              setFieldValue(`${rowPath}.data.fieldInfo.pathType`, value.match(/^\w*:[/]{2,3}/)[0])
+            }
+          }
+        }}
+      </OnChange>
+      <OnChange name={`${rowPath}.data.fieldInfo.pathType`}>
+        {(value, prevValue) => {
+          if (editingItem) {
+            if (prevValue === MLRUN_STORAGE_INPUT_PATH_SCHEME) {
+              setDataInputState(dataInputInitialState)
+            }
           }
         }}
       </OnChange>
@@ -342,7 +362,7 @@ FormDataInputsRow.defaultProps = {
 
 FormDataInputsRow.propTypes = {
   applyChanges: PropTypes.func.isRequired,
-  comboboxFields: COMBOBOX_FIELDS,
+  dataInputState: DATA_INPUT_STATE,
   deleteRow: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
   discardOrDelete: PropTypes.func.isRequired,

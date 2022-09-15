@@ -21,7 +21,6 @@ import {
 import { isEveryObjectValueEmpty } from '../../utils/isEveryObjectValueEmpty'
 import { parseKeyValues } from '../../utils'
 import { getDefaultSchedule, scheduleDataInitialState } from '../SheduleWizard/scheduleWizard.util'
-import { comboboxFieldsInitialState } from '../../elements/FormDataInputsTable/formDataInputsTable.util'
 
 export const generateJobWizardData = (
   frontendSpec,
@@ -78,8 +77,7 @@ export const generateJobWizardData = (
     },
     dataInputs: {
       inputPath: undefined,
-      outputPath: JOB_DEFAULT_OUTPUT_PATH,
-      comboboxFields: comboboxFieldsInitialState
+      outputPath: JOB_DEFAULT_OUTPUT_PATH
     },
     parameters: {},
     resources: {

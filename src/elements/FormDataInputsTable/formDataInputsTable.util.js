@@ -7,9 +7,8 @@ import {
   S3_INPUT_PATH_SCHEME,
   V3IO_INPUT_PATH_SCHEME
 } from '../../constants'
-import { getParsedResource } from '../../utils/resources'
+import { getArtifactReference, getParsedResource } from '../../utils/resources'
 import { isNil } from 'lodash'
-import { storePathTypes } from '../../components/JobsPanelDataInputs/jobsPanelDataInputs.util'
 
 export const comboboxSelectList = [
   {
@@ -49,13 +48,16 @@ export const comboboxSelectList = [
   }
 ]
 
-export const pathTips = {
-  [MLRUN_STORAGE_INPUT_PATH_SCHEME]:
-    'artifacts/my-project/my-artifact:my-tag" or "artifacts/my-project/my-artifact@my-uid',
-  [S3_INPUT_PATH_SCHEME]: 'bucket/path',
-  [GOOGLE_STORAGE_INPUT_PATH_SCHEME]: 'bucket/path',
-  [AZURE_STORAGE_INPUT_PATH_SCHEME]: 'container/path',
-  [V3IO_INPUT_PATH_SCHEME]: 'container-name/file'
+export const pathTips = storePathType => {
+  const pathType = storePathType === 'feature-vectors' ? 'feature-vector' : 'artifact'
+
+  return {
+    [MLRUN_STORAGE_INPUT_PATH_SCHEME]: `${pathType}s/my-project/my-${pathType}:my-tag" or "${pathType}s/my-project/my-${pathType}@my-uid`,
+    [S3_INPUT_PATH_SCHEME]: 'bucket/path',
+    [GOOGLE_STORAGE_INPUT_PATH_SCHEME]: 'bucket/path',
+    [AZURE_STORAGE_INPUT_PATH_SCHEME]: 'container/path',
+    [V3IO_INPUT_PATH_SCHEME]: 'container-name/file'
+  }
 }
 
 export const pathPlaceholders = {
@@ -66,31 +68,42 @@ export const pathPlaceholders = {
   [V3IO_INPUT_PATH_SCHEME]: 'container-name/file'
 }
 
-export const comboboxFieldsInitialState = {
-  projects: [],
+export const dataInputInitialState = {
   artifacts: [],
   artifactsReferences: [],
+  comboboxMatches: [],
   featureVectors: [],
   featureVectorsReferences: [],
-  comboboxMatches: [],
-  inputStorePathTypeEntered: false,
-  inputProjectPathEntered: false,
   inputProjectItemPathEntered: false,
   inputProjectItemReferencePathEntered: false,
-  storePathType: '',
-  project: ''
+  inputProjectPathEntered: false,
+  inputStorePathTypeEntered: false,
+  project: '',
+  projectItemReference: '',
+  projects: [],
+  storePathType: ''
 }
+
+export const storePathTypes = [
+  {
+    label: 'Artifacts',
+    id: 'artifacts'
+  },
+  {
+    label: 'Feature vectors',
+    id: 'feature-vectors'
+  }
+]
 
 export const isPathInputInvalid = (pathInputType, pathInputValue) => {
   const valueIsNotEmpty = pathInputValue?.trim().length > 0
+
   switch (pathInputType) {
     case MLRUN_STORAGE_INPUT_PATH_SCHEME:
       return valueIsNotEmpty &&
         /^(artifacts|feature-vectors)\/(.+?)\/(.+?)(#(.+?))?(:(.+?))?(@(.+))?$/.test(pathInputValue)
         ? false
         : 'This field is invalid'
-    case HTTP_STORAGE_INPUT_PATH_SCHEME:
-    case HTTPS_STORAGE_INPUT_PATH_SCHEME:
     case V3IO_INPUT_PATH_SCHEME:
     case AZURE_STORAGE_INPUT_PATH_SCHEME:
     case GOOGLE_STORAGE_INPUT_PATH_SCHEME:
@@ -103,34 +116,39 @@ export const isPathInputInvalid = (pathInputType, pathInputValue) => {
   }
 }
 
-export const handleStoreInputPathChange = (fieldInfo, fieldInfoPath, setFieldValue, value) => {
+export const handleStoreInputPathChange = (dataInputState, setDataInputState, value) => {
   const pathItems = value.split('/')
   const [projectItem, projectItemReference] = getParsedResource(pathItems[2])
-  const projectItems = fieldInfo[pathItems[0] === 'artifacts' ? 'artifacts' : 'featureVectors']
+  const projectItems = dataInputState[pathItems[0] === 'artifacts' ? 'artifacts' : 'featureVectors']
   const projectItemIsEntered = projectItems.find(project => project.id === projectItem)
   const projectItemsReferences =
-    fieldInfo[pathItems[0] === 'artifacts' ? 'artifactsReferences' : 'featureVectorsReferences']
+    dataInputState[
+      pathItems[0] === 'artifacts' ? 'artifactsReferences' : 'featureVectorsReferences'
+    ]
   const projectItemReferenceIsEntered = projectItemsReferences.find(
     projectItemRef => projectItemRef.id === projectItemReference
   )
   const isInputStorePathTypeValid = storePathTypes.some(type => type.id.startsWith(pathItems[0]))
 
-  setFieldValue(`${fieldInfoPath}`, {
-    ...fieldInfo,
-    artifacts: isNil(pathItems[2]) && fieldInfo.artifacts.length > 0 ? [] : fieldInfo.artifacts,
-    artifactsReferences: projectItemReference ? fieldInfo.artifactsReferences : [],
+  setDataInputState(prev => ({
+    ...prev,
+    artifacts:
+      isNil(pathItems[2]) && dataInputState.artifacts.length > 0 ? [] : dataInputState.artifacts,
+    artifactsReferences: projectItemReference ? dataInputState.artifactsReferences : [],
     featureVectors:
-      isNil(pathItems[2]) && fieldInfo.featureVectors.length > 0 ? [] : fieldInfo.featureVectors,
-    featureVectorsReferences: projectItemReference ? fieldInfo.featureVectorsReferences : [],
+      isNil(pathItems[2]) && dataInputState.featureVectors.length > 0
+        ? []
+        : dataInputState.featureVectors,
+    featureVectorsReferences: projectItemReference ? dataInputState.featureVectorsReferences : [],
     inputProjectItemPathEntered: Boolean(projectItemIsEntered),
     inputProjectItemReferencePathEntered: Boolean(projectItemReferenceIsEntered),
     inputProjectPathEntered: isInputStorePathTypeValid && typeof pathItems[2] === 'string',
     inputStorePathTypeEntered: isInputStorePathTypeValid && typeof pathItems[1] === 'string',
-    project: pathItems[1] ?? fieldInfo.project,
-    projectItem: projectItem ?? fieldInfo.projectItem,
-    projectItemReference: projectItemReference ?? fieldInfo.projectItemReference,
-    storePathType: pathItems[0] ?? fieldInfo.storePathType
-  })
+    project: pathItems[1] ?? dataInputState.project,
+    projectItem: projectItem ?? dataInputState.projectItem,
+    projectItemReference: projectItemReference ?? dataInputState.projectItemReference,
+    storePathType: pathItems[0] ?? dataInputState.storePathType
+  }))
 }
 
 export const generateComboboxMatchesList = (
@@ -180,3 +198,52 @@ export const generateComboboxMatchesList = (
     return []
   }
 }
+
+export const generateProjectsList = (projectsList, currentProject) =>
+  projectsList
+    .map(projectItem => ({
+      label: projectItem === currentProject ? 'Current project' : projectItem,
+      id: projectItem
+    }))
+    .sort((prevProject, nextProject) => {
+      return prevProject.id === currentProject
+        ? -1
+        : nextProject.id === currentProject
+        ? 1
+        : prevProject.id.localeCompare(nextProject.id)
+    })
+
+export const generateArtifactsList = artifacts =>
+  artifacts
+    .map(artifact => {
+      const key = artifact.link_iteration ? artifact.link_iteration.db_key : artifact.key ?? ''
+      return {
+        label: key,
+        id: key
+      }
+    })
+    .filter(artifact => artifact.label !== '')
+    .sort((prevArtifact, nextArtifact) => prevArtifact.id.localeCompare(nextArtifact.id))
+
+export const generateArtifactsReferencesList = artifacts =>
+  artifacts
+    .map(artifact => {
+      const artifactReference = getArtifactReference(artifact)
+
+      return {
+        label: artifactReference,
+        id: artifactReference,
+        customDelimiter: artifactReference[0]
+      }
+    })
+    .filter(reference => reference.label !== '')
+    .sort((prevRef, nextRef) => {
+      const [prevRefIter, prevRefTree] = prevRef.id.split('@')
+      const [nextRefIter, nextRefTree] = nextRef.id.split('@')
+
+      if (prevRefTree === nextRefTree) {
+        return prevRefIter.localeCompare(nextRefIter)
+      } else {
+        return prevRefTree.localeCompare(nextRefTree)
+      }
+    })

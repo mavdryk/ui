@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FieldArray } from 'react-final-form-arrays'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
@@ -8,20 +8,13 @@ import FormActionButton from 'igz-controls/elements/FormActionButton/FormActionB
 import FormDataInputsRow from './FormDataInputsRow/FormDataInputsRow'
 
 import { useFormTable } from 'igz-controls/hooks/useFormTable.hook'
-import { comboboxFieldsInitialState } from './formDataInputsTable.util'
+import { dataInputInitialState } from './formDataInputsTable.util'
+import { useSelector } from 'react-redux'
 
-const FormDataInputsTable = ({
-  className,
-  disabled,
-  fetchArtifact,
-  fetchArtifacts,
-  fetchFeatureVector,
-  fetchFeatureVectors,
-  fieldsPath,
-  formState,
-  projectStore
-}) => {
+const FormDataInputsTable = ({ className, disabled, fieldsPath, formState }) => {
+  const [dataInputState, setDataInputState] = useState(dataInputInitialState)
   const tableClassNames = classnames('form-table', className)
+  const projectStore = useSelector(store => store.projectStore)
   const { editingItem, addNewRow, applyChanges, deleteRow, discardOrDelete, enterEditMode } =
     useFormTable(formState)
 
@@ -50,22 +43,19 @@ const FormDataInputsTable = ({
                 return (
                   <FormDataInputsRow
                     applyChanges={applyChanges}
-                    comboboxFields={formState.values.dataInputs.comboboxFields}
+                    dataInputState={dataInputState}
                     deleteRow={deleteRow}
                     disabled={disabled}
                     discardOrDelete={discardOrDelete}
                     editingItem={editingItem}
                     enterEditMode={enterEditMode}
-                    fetchArtifact={fetchArtifact}
-                    fetchArtifacts={fetchArtifacts}
-                    fetchFeatureVector={fetchFeatureVector}
-                    fetchFeatureVectors={fetchFeatureVectors}
                     fields={fields}
                     fieldsPath={fieldsPath}
                     index={index}
                     key={rowPath}
                     projectStore={projectStore}
                     rowPath={rowPath}
+                    setDataInputState={setDataInputState}
                     setFieldState={formState.form.mutators.setFieldState}
                     setFieldValue={formState.form.change}
                     uniquenessValidator={uniquenessValidator}
@@ -79,7 +69,7 @@ const FormDataInputsTable = ({
                   fieldsPath={fieldsPath}
                   label="Add input "
                   onClick={(...addRowArgs) => {
-                    formState.form.change('dataInputs.comboboxFields', comboboxFieldsInitialState)
+                    setDataInputState(dataInputInitialState)
                     addNewRow(...addRowArgs, {
                       data: {
                         name: '',
@@ -89,8 +79,7 @@ const FormDataInputsTable = ({
                           value: ''
                         }
                       },
-                      doc: '',
-                      isDefault: false
+                      doc: ''
                     })
                   }}
                 />
