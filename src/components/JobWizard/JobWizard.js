@@ -233,11 +233,11 @@ const JobWizard = ({
                 />
               )}
               <JobWizardJobDetails
-                isEditMode={isEditMode}
                 defaultData={defaultData}
-                frontendSpec={frontendSpec}
-                isStagingMode={isStagingMode}
                 formState={formState}
+                frontendSpec={frontendSpec}
+                isEditMode={isEditMode}
+                isStagingMode={isStagingMode}
                 jobAdditionalData={jobAdditionalData}
                 selectedFunctionData={selectedFunctionData}
                 setJobAdditionalData={setJobAdditionalData}

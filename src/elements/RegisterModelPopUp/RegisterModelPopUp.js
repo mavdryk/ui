@@ -168,7 +168,7 @@ function RegisterModelPopUp({ actions, isOpen, onResolve, projectName, refresh }
                 label="labels"
                 name="labels"
                 shortChips
-                visibleChipsMaxLength="2"
+                visibleChipsMaxLength="all"
                 validationRules={{
                   key: getValidationRules('common.tag'),
                   value: getValidationRules('common.tag')
