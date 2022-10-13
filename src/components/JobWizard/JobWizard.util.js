@@ -33,7 +33,7 @@ import { CONFLICT_ERROR_STATUS_CODE, FORBIDDEN_ERROR_STATUS_CODE } from 'igz-con
 import { generateObjectFromKeyValue, parseObjectToKeyValue } from 'igz-controls/utils/form.util'
 import { getDefaultSchedule, scheduleDataInitialState } from '../SheduleWizard/scheduleWizard.util'
 import { isEveryObjectValueEmpty } from '../../utils/isEveryObjectValueEmpty'
-import { convertChipsData, generateChipsList } from '../../utils/convertChipsData'
+import { generateChipsData, parseChipsData } from '../../utils/convertChipsData'
 
 const volumeTypesMap = {
   [CONFIG_MAP_VOLUME_TYPE]: 'configMap',
@@ -305,7 +305,7 @@ const getFunctionInfo = selectedFunctionData => {
     const { defaultMethod, defaultVersion } = getDefaultMethodAndVersion(versionOptions, functions)
 
     return {
-      labels: generateChipsList(functions[0].metadata.labels),
+      labels: parseChipsData(functions[0].metadata.labels),
       name: selectedFunctionData.name,
       method: defaultMethod || (methodOptions[0]?.id ?? ''),
       methodDescription: methodOptions[0]?.subLabel ?? '',
@@ -318,7 +318,7 @@ const getFunctionInfo = selectedFunctionData => {
 
 const getFunctionDefaultInfo = defaultData => {
   return {
-    labels: generateChipsList(defaultData.task?.metadata?.labels),
+    labels: parseChipsData(defaultData.task?.metadata?.labels),
     name: defaultData.task?.metadata?.name || '',
     method: defaultData.task?.spec?.handler,
     methodDescription: '',
@@ -861,7 +861,7 @@ export const generateRunPostData = (formData, selectedFunctionData, params, mode
       metadata: {
         project: formData.functionSelection?.projectName ?? params.projectName,
         name: formData.jobDetails.name,
-        labels: convertChipsData(formData.jobDetails.labels)
+        labels: generateChipsData(formData.jobDetails.labels)
       },
       spec: {
         inputs: generateDataInputs(formData.dataInputs.dataInputsTable),

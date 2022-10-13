@@ -140,7 +140,7 @@ const JobWizardJobDetails = ({
           chipOptions={getChipOptions('metrics')}
           formState={formState}
           initialValues={formState.initialValues}
-          isEditMode
+          isEditable
           label="labels"
           name="jobDetails.labels"
           shortChips
