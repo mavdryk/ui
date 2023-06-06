@@ -20,6 +20,7 @@ such restriction.
 import React, { createRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
+import { useDispatch } from 'react-redux'
 import { cloneDeep, debounce } from 'lodash'
 
 import CheckBox from '../../common/CheckBox/CheckBox'
@@ -65,6 +66,7 @@ const MembersPopUp = ({
     name: '',
     role: 'All'
   })
+  const dispatch = useDispatch()
 
   const membersTableRowClassNames = classnames('table-row', inviteNewMembers && 'inactive')
 
@@ -170,18 +172,20 @@ const MembersPopUp = ({
         changeMembersCallback(response.data.data.id)
       })
       .catch(error => {
-        setNotification({
-          status: error.response?.status || 400,
-          id: Math.random(),
-          message:
-            error.response?.status === FORBIDDEN_ERROR_STATUS_CODE
-              ? 'Missing edit permission for the project.'
-              : 'Failed to edit project data.',
-          retry:
-            error.response?.status === FORBIDDEN_ERROR_STATUS_CODE
-              ? null
-              : () => applyMembersChanges(changesBody)
-        })
+        dispatch(
+          setNotification({
+            status: error.response?.status || 400,
+            id: Math.random(),
+            message:
+              error.response?.status === FORBIDDEN_ERROR_STATUS_CODE
+                ? 'Missing edit permission for the project.'
+                : 'Failed to edit project data.',
+            retry:
+              error.response?.status === FORBIDDEN_ERROR_STATUS_CODE
+                ? null
+                : () => applyMembersChanges(changesBody)
+          })
+        )
       })
     handleOnClose()
   }

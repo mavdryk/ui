@@ -22,7 +22,13 @@ import PropTypes from 'prop-types'
 import { isEmpty, omit } from 'lodash'
 import { OnChange } from 'react-final-form-listeners'
 
-import { FormInput, FormSelect, ConfirmDialog, FormChipCell } from 'igz-controls/components'
+import {
+  FormInput,
+  FormSelect,
+  ConfirmDialog,
+  FormChipCell,
+  FormCheckBox
+} from 'igz-controls/components'
 
 import { SECONDARY_BUTTON, TERTIARY_BUTTON } from 'igz-controls/constants'
 import { areFormValuesChanged } from 'igz-controls/utils/form.util'
@@ -67,9 +73,15 @@ const JobWizardRunDetails = ({
   )
 
   useEffect(() => {
-    if (isEditMode && !isEmpty(defaultData) && isEmpty(jobAdditionalData)) {
+    if (
+      isEditMode &&
+      !isEmpty(selectedFunctionData) &&
+      !isEmpty(defaultData) &&
+      isEmpty(jobAdditionalData)
+    ) {
       const [jobFormData, jobAdditionalData] = generateJobWizardDefaultData(
         frontendSpec,
+        selectedFunctionData,
         defaultData,
         isEditMode,
         isStagingMode
@@ -143,6 +155,9 @@ const JobWizardRunDetails = ({
       <div className="job-wizard__run-details form">
         <div className="form-row">
           <h5 className="form-step-title">Run Details</h5>
+        </div>
+        <div className="form-row">
+          <FormCheckBox label="Hyperparameter" name="runDetails.hyperparameter" />
         </div>
         <div className="form-row">
           <div className="form-col-2">
