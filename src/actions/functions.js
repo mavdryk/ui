@@ -234,7 +234,7 @@ const functionsActions = {
     payload: err
   }),
   fetchFunctions:
-    (project, filters, config, setRequestErrorMessage = () => {}) =>
+    (project, filters, config, paginationConfig, setRequestErrorMessage = () => {}) =>
     dispatch => {
       const setRequestErrorMessageLocal =
         config?.ui?.setRequestErrorMessage || setRequestErrorMessage
@@ -243,11 +243,14 @@ const functionsActions = {
       setRequestErrorMessageLocal('')
 
       return functionsApi
-        .getFunctions(project, filters, config)
+        .getFunctions(project, filters, config, paginationConfig)
         .then(({ data }) => {
           dispatch(functionsActions.fetchFunctionsSuccess(data.funcs))
+          // if (!filters?.[NAME_FILTER]) {
+          //   data.pagination.page = data.pagination.page - 1
+          // }
 
-          return data.funcs
+          return data
         })
         .catch(error => {
           dispatch(functionsActions.fetchFunctionsFailure(error.message))

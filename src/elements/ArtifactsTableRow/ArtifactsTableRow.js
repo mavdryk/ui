@@ -40,7 +40,7 @@ import { isRowExpanded, PARENT_ROW_EXPANDED_CLASS } from '../../utils/tableRows.
 
 const ArtifactsTableRow = ({
   actionsMenu,
-  handleExpandRow = null,
+  toggleRow = null,
   handleSelectItem = () => {},
   hideActionsMenu = false,
   rowIndex,
@@ -90,7 +90,7 @@ const ArtifactsTableRow = ({
                           className={cellClassName}
                           data={data}
                           firstCell={index === 0}
-                          handleExpandRow={handleExpandRow}
+                          toggleRow={toggleRow}
                           item={rowItem}
                           key={data.id}
                           link={
@@ -198,7 +198,7 @@ const ArtifactsTableRow = ({
                 <TableCell
                   className={cellClassNames}
                   data={value}
-                  handleExpandRow={handleExpandRow}
+                  toggleRow={toggleRow}
                   firstCell={index === 0 && params.pageTab !== MODEL_ENDPOINTS_TAB}
                   item={rowItem.data}
                   key={value.id}
@@ -228,7 +228,7 @@ const ArtifactsTableRow = ({
 
 ArtifactsTableRow.propTypes = {
   actionsMenu: ACTIONS_MENU.isRequired,
-  handleExpandRow: PropTypes.func,
+  toggleRow: PropTypes.func,
   handleSelectItem: PropTypes.func,
   mainRowItemsCount: PropTypes.number,
   rowIndex: PropTypes.number.isRequired,

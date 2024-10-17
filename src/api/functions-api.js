@@ -18,7 +18,8 @@ under the Apache 2.0 license is conditioned upon your compliance with
 such restriction.
 */
 import { functionTemplatesHttpClient, mainHttpClient, mainHttpClientV2 } from '../httpClient'
-import { DATES_FILTER, NAME_FILTER, SHOW_UNTAGGED_FILTER } from '../constants'
+import { BE_PAGE, BE_PAGE_SIZE, DATES_FILTER, NAME_FILTER, SHOW_UNTAGGED_FILTER } from '../constants'
+import { isEmpty } from 'lodash'
 
 const functionsApi = {
   createNewFunction: (project, data) =>
@@ -31,7 +32,7 @@ const functionsApi = {
   deleteSelectedFunction: (funcName, project) =>
     mainHttpClientV2.delete(`/projects/${project}/functions/${funcName}`),
   deployFunction: data => mainHttpClient.post('/build/function', data),
-  getFunctions: (project, filters, config = {}, hash) => {
+  getFunctions: (project, filters, config = {}, paginationConfig = {}, hash) => {
     const newConfig = {
       ...config,
       params: {
@@ -58,6 +59,11 @@ const functionsApi = {
 
     if (hash) {
       newConfig.params.hash_key = hash
+    }
+
+    if (!isEmpty(paginationConfig)) {
+      newConfig.params.page = paginationConfig[BE_PAGE]
+      newConfig.params['page-size'] = paginationConfig[BE_PAGE_SIZE]
     }
 
     return mainHttpClient.get(`/projects/${project}/functions`, newConfig)

@@ -51,9 +51,9 @@ import {
   TYPE_FILTER
 } from '../constants'
 import {
+  ANY_TIME_DATE_OPTION,
   NEXT_24_HOUR_DATE_OPTION,
   PAST_24_HOUR_DATE_OPTION,
-  PAST_WEEK_DATE_OPTION,
   datePickerFutureOptions,
   datePickerPastOptions,
   getDatePickerFilterValue
@@ -119,11 +119,11 @@ const initialState = {
     [FUNCTION_FILTERS]: {
       values: {
         [NAME_FILTER]: '',
-        [DATES_FILTER]: getDatePickerFilterValue(datePickerPastOptions, PAST_WEEK_DATE_OPTION),
+        [DATES_FILTER]: getDatePickerFilterValue(datePickerPastOptions, ANY_TIME_DATE_OPTION),
       },
       initialValues: {
         [NAME_FILTER]: '',
-        [DATES_FILTER]: getDatePickerFilterValue(datePickerPastOptions, PAST_WEEK_DATE_OPTION),
+        [DATES_FILTER]: getDatePickerFilterValue(datePickerPastOptions, ANY_TIME_DATE_OPTION),
       }
     },
     [CONSUMER_GROUPS_FILTER]: {
@@ -181,8 +181,8 @@ const initialState = {
       }
     },
     [FUNCTION_FILTERS]: {
-      initialValues: { [SHOW_UNTAGGED_FILTER]: false },
-      values: { [SHOW_UNTAGGED_FILTER]: false }
+      initialValues: { [SHOW_UNTAGGED_FILTER]: true },
+      values: { [SHOW_UNTAGGED_FILTER]: true }
     },
     [JOBS_MONITORING_JOBS_TAB]: {
       initialValues: {

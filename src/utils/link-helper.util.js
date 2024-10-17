@@ -41,12 +41,21 @@ export const generateUrlFromRouterPath = link => {
   return new URL(link, window.location.origin).toString()
 }
 
-export const getCloseDetailsLink = (location, paramName) => {
-  return location.pathname
+export const getCloseDetailsLink = (paramName) => {
+  const link = window.location.pathname
     .split('/')
-    .splice(0, location.pathname.split('/').lastIndexOf(paramName) + 1)
+    .splice(0, window.location.pathname.split('/').lastIndexOf(paramName) + 1)
     .join('/')
+
+  return generateUrlFromRouterPath(link)
 }
+
+export const getDefaultCloseDetailsLink = (params, page, tab) => {
+  return `/projects/${params.projectName}/${page.toLowerCase()}${
+    params.pageTab ? `/${params.pageTab}` : tab ? `/${tab}` : ''
+  }${window.location.search}`
+}
+
 
 export const generateLinkToDetailsPanel = (
   project,

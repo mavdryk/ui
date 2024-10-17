@@ -28,6 +28,7 @@ import FunctionsPanel from '../FunctionsPanel/FunctionsPanel'
 import FunctionsTableRow from '../../elements/FunctionsTableRow/FunctionsTableRow'
 import Loader from '../../common/Loader/Loader'
 import NoData from '../../common/NoData/NoData'
+import Pagination from '../../common/Pagination/Pagination'
 import Table from '../Table/Table'
 import YamlModal from '../../common/YamlModal/YamlModal'
 import { ConfirmDialog } from 'igz-controls/components'
@@ -38,19 +39,18 @@ import {
   PANEL_CREATE_MODE,
   PANEL_EDIT_MODE
 } from '../../constants'
+import { FILTERS_CONFIG } from '../../types'
 import { SECONDARY_BUTTON } from 'igz-controls/constants'
-import { FILTERS_CONFIG, VIRTUALIZATION_CONFIG } from '../../types'
 import { getNoDataMessage } from '../../utils/getNoDataMessage'
-import { isRowRendered } from '../../hooks/useVirtualization.hook'
 
 const FunctionsView = ({
   actionsMenu,
   closePanel,
-  confirmData,
+  confirmData = null,
   convertedYaml,
   createFunctionSuccess,
-  editableItem,
-  expand,
+  editableItem = null,
+  allRowsAreExpanded,
   filtersChangeCallback,
   filtersStore,
   functions,
@@ -62,17 +62,18 @@ const FunctionsView = ({
   handleDeployFunctionFailure,
   handleDeployFunctionSuccess,
   handleExpandAll,
-  handleExpandRow,
+  expandedRowsData,
+  toggleRow,
   handleSelectFunction,
   isDemoMode,
+  pageChangeCallback,
   pageData,
-  retryRequest,
+  paginationConfig,
   requestErrorMessage,
+  retryRequest,
   selectedFunction,
-  selectedRowData,
   tableContent,
-  toggleConvertedYaml,
-  virtualizationConfig
+  toggleConvertedYaml
 }) => {
   const params = useParams()
   return (
@@ -86,7 +87,7 @@ const FunctionsView = ({
             <div className="content__action-bar-wrapper">
               <ActionBar
                 page={FUNCTIONS_PAGE}
-                expand={expand}
+                expand={allRowsAreExpanded}
                 filtersConfig={functionsFiltersConfig}
                 filterMenuName={FUNCTION_FILTERS}
                 handleExpandAll={handleExpandAll}
@@ -130,25 +131,27 @@ const FunctionsView = ({
                   selectedItem={selectedFunction}
                   tableClassName="functions-table"
                   tableHeaders={tableContent[0]?.content ?? []}
-                  virtualizationConfig={virtualizationConfig}
                 >
-                  {tableContent.map(
-                    (tableItem, index) =>
-                      isRowRendered(virtualizationConfig, index) && (
-                        <FunctionsTableRow
-                          actionsMenu={actionsMenu}
-                          handleExpandRow={handleExpandRow}
-                          handleSelectItem={handleSelectFunction}
-                          rowIndex={index}
-                          key={tableItem.data.ui.identifier}
-                          rowItem={tableItem}
-                          selectedItem={selectedFunction}
-                          selectedRowData={selectedRowData}
-                          withQuickActions
-                        />
-                      )
-                  )}
+                  {tableContent.map((tableItem, index) => (
+                    <FunctionsTableRow
+                      actionsMenu={actionsMenu}
+                      toggleRow={toggleRow}
+                      handleSelectItem={handleSelectFunction}
+                      rowIndex={index}
+                      key={tableItem.data.ui.identifier}
+                      rowItem={tableItem}
+                      selectedItem={selectedFunction}
+                      expandedRowsData={expandedRowsData}
+                      withQuickActions
+                    />
+                  ))}
                 </Table>
+                <Pagination
+                  paginationConfig={paginationConfig}
+                  pageChangeCallback={pageChangeCallback}
+                  selectedItem={selectedFunction}
+                  page={pageData.page}
+                />
               </>
             )}
           </div>
@@ -190,11 +193,6 @@ const FunctionsView = ({
   )
 }
 
-FunctionsView.defaultPropTypes = {
-  confirmData: null,
-  editableItem: null
-}
-
 FunctionsView.propTypes = {
   actionsMenu: PropTypes.func.isRequired,
   closePanel: PropTypes.func.isRequired,
@@ -202,7 +200,7 @@ FunctionsView.propTypes = {
   convertedYaml: PropTypes.string.isRequired,
   createFunctionSuccess: PropTypes.func.isRequired,
   editableItem: PropTypes.object,
-  expand: PropTypes.bool.isRequired,
+  allRowsAreExpanded: PropTypes.bool.isRequired,
   filtersChangeCallback: PropTypes.func.isRequired,
   filtersStore: PropTypes.object.isRequired,
   functions: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -214,16 +212,15 @@ FunctionsView.propTypes = {
   handleDeployFunctionFailure: PropTypes.func.isRequired,
   handleDeployFunctionSuccess: PropTypes.func.isRequired,
   handleExpandAll: PropTypes.func.isRequired,
-  handleExpandRow: PropTypes.func.isRequired,
+  toggleRow: PropTypes.func.isRequired,
   handleSelectFunction: PropTypes.func.isRequired,
   pageData: PropTypes.object.isRequired,
   retryRequest: PropTypes.func.isRequired,
   requestErrorMessage: PropTypes.string.isRequired,
   selectedFunction: PropTypes.object.isRequired,
-  selectedRowData: PropTypes.object.isRequired,
+  expandedRowsData: PropTypes.object.isRequired,
   tableContent: PropTypes.arrayOf(PropTypes.object).isRequired,
-  toggleConvertedYaml: PropTypes.func.isRequired,
-  virtualizationConfig: VIRTUALIZATION_CONFIG.isRequired
+  toggleConvertedYaml: PropTypes.func.isRequired
 }
 
 export default FunctionsView

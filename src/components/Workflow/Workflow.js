@@ -262,7 +262,7 @@ const Workflow = ({
               <Details
                 actionsMenu={actionsMenu}
                 detailsMenu={pageData.details.menu}
-                getCloseDetailsLink={() => getCloseDetailsLink(window.location, params.workflowId)}
+                getCloseDetailsLink={() => getCloseDetailsLink(params.workflowId)}
                 handleCancel={handleCancel}
                 pageData={pageData}
                 retryRequest={refreshJobs}
@@ -274,7 +274,7 @@ const Workflow = ({
         ) : (
           <Table
             actionsMenu={actionsMenu}
-            getCloseDetailsLink={() => getCloseDetailsLink(window.location, params.workflowId)}
+            getCloseDetailsLink={() => getCloseDetailsLink(params.workflowId)}
             handleCancel={handleCancel}
             hideActionsMenu
             pageData={pageData}

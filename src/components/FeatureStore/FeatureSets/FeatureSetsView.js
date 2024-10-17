@@ -46,7 +46,7 @@ const FeatureSetsView = React.forwardRef(
       featureSetsPanelIsOpen,
       featureStore,
       filtersStore,
-      handleExpandRow,
+      toggleRow,
       handleRefresh,
       pageData,
       requestErrorMessage,
@@ -104,7 +104,7 @@ const FeatureSetsView = React.forwardRef(
                   isRowRendered(virtualizationConfig, index) && (
                     <FeatureStoreTableRow
                       actionsMenu={actionsMenu}
-                      handleExpandRow={handleExpandRow}
+                      toggleRow={toggleRow}
                       rowIndex={index}
                       key={tableItem.data.ui.identifier}
                       pageTab={FEATURE_SETS_TAB}
@@ -140,7 +140,7 @@ FeatureSetsView.propTypes = {
   featureSetsPanelIsOpen: PropTypes.bool.isRequired,
   featureStore: PropTypes.object.isRequired,
   filtersStore: PropTypes.object.isRequired,
-  handleExpandRow: PropTypes.func.isRequired,
+  toggleRow: PropTypes.func.isRequired,
   handleRefresh: PropTypes.func.isRequired,
   pageData: PropTypes.object.isRequired,
   requestErrorMessage: PropTypes.string.isRequired,

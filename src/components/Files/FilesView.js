@@ -53,7 +53,7 @@ const FilesView = React.forwardRef(
       files,
       filtersStore,
       getAndSetSelectedArtifact,
-      handleExpandRow,
+      toggleRow,
       handleRefresh,
       handleRegisterArtifact,
       handleSelectFile,
@@ -142,7 +142,7 @@ const FilesView = React.forwardRef(
                         isRowRendered(virtualizationConfig, index) && (
                           <ArtifactsTableRow
                             actionsMenu={actionsMenu}
-                            handleExpandRow={handleExpandRow}
+                            toggleRow={toggleRow}
                             handleSelectItem={handleSelectFile}
                             key={tableItem.data.ui.identifier}
                             rowIndex={index}
@@ -192,7 +192,7 @@ FilesView.propTypes = {
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   filtersStore: PropTypes.object.isRequired,
   getAndSetSelectedArtifact: PropTypes.func.isRequired,
-  handleExpandRow: PropTypes.func.isRequired,
+  toggleRow: PropTypes.func.isRequired,
   handleRefresh: PropTypes.func.isRequired,
   handleRegisterArtifact: PropTypes.func.isRequired,
   handleSelectFile: PropTypes.func.isRequired,

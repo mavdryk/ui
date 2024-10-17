@@ -1,0 +1,61 @@
+@import '~igz-controls/scss/colors';
+@import '~igz-controls/scss/variables';
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 5px;
+
+  .pagination-pages {
+    display: flex;
+    justify-content: center;
+    min-width: 280px;
+  }
+
+  .pagination-btn {
+    display: flex;
+    justify-content: center;
+    border: none;
+    padding: 8px 10px;
+    margin: 0 2px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    border-radius: $mainBorderRadius;
+
+    &:hover:not(.pagination-btn_active):not(:disabled) {
+      background-color: rgba($malibu, 0.3);
+    }
+
+    &.pagination-btn_active {
+      background-color: $malibu;
+      color: white;
+    }
+
+    &.pagination-dots {
+      box-sizing: content-box;
+      cursor: default;
+    }
+
+    &:disabled {
+      color: $bombay;
+      cursor: default;
+    }
+
+    &.pagination-navigate-btn {
+      margin: 0 5px;
+
+      &:disabled {
+        //cursor: not-allowed;
+      }
+
+      .pagination-navigate-btn__arrow {
+        display: inline-block;
+        transform: scale(1.5) translate(0, -1px);
+      }
+    }
+  }
+}

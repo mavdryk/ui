@@ -42,7 +42,7 @@ const TableCell = ({
   className = '',
   data,
   firstCell,
-  handleExpandRow = null,
+  toggleRow = null,
   item = {
     target_path: '',
     schema: ''
@@ -72,7 +72,7 @@ const TableCell = ({
         className={className}
         data={data}
         showExpandButton={showExpandButton}
-        handleExpandRow={handleExpandRow}
+        toggleRow={toggleRow}
         item={item}
         link={link}
         selectItem={selectItem}
@@ -100,7 +100,7 @@ const TableCell = ({
           </Tooltip>
         )}
         {showExpandButton && (
-          <Arrow onClick={e => handleExpandRow(e, item)} className="expand-arrow" />
+          <Arrow onClick={e => toggleRow(e, item)} className="expand-arrow" />
         )}
       </td>
     )
@@ -208,7 +208,7 @@ TableCell.propTypes = {
   className: PropTypes.string,
   data: PropTypes.shape({}).isRequired,
   firstCell: PropTypes.bool,
-  handleExpandRow: PropTypes.func,
+  toggleRow: PropTypes.func,
   item: PropTypes.oneOfType([PropTypes.shape({}), PropTypes.bool]),
   link: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   selectItem: PropTypes.func,

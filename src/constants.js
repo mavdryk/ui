@@ -62,6 +62,15 @@ export const CANCEL_REQUEST_TIMEOUT = 120000
 
 export const PROJECT_ONLINE_STATUS = 'online'
 
+/*=========== PAGINATION =============*/
+
+export const BE_PAGE = 'bePage'
+export const FE_PAGE = 'fePage'
+export const BE_PAGE_SIZE = 'bePageSize'
+export const FE_PAGE_SIZE = 'fePageSize'
+export const FE_PAGE_START = 'fePageStart'
+export const FE_PAGE_END = 'fePageEnd'
+
 /*=========== PAGES & TABS =============*/
 
 export const PROJECTS_PAGE = 'PROJECTS'

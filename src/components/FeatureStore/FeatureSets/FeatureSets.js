@@ -151,7 +151,7 @@ const FeatureSets = ({
     return fetchData(filters)
   }, [fetchData, fetchTags])
 
-  const handleRemoveFeatureSet = useCallback(
+  const collapseRowCallback = useCallback(
     featureSet => {
       const newStoreSelectedRowData = {
         ...featureStore.featureSets.selectedRowData.content
@@ -168,7 +168,7 @@ const FeatureSets = ({
     [featureStore.featureSets.selectedRowData.content, selectedRowData, removeFeatureSet]
   )
 
-  const handleRequestOnExpand = useCallback(
+  const expandRowCallback = useCallback(
     item => {
       const featureSetIdentifier = getFeatureSetIdentifier(item)
 
@@ -207,11 +207,11 @@ const FeatureSets = ({
     [fetchFeatureSet, filtersStore.tag, params.projectName]
   )
 
-  const { latestItems, handleExpandRow } = useGroupContent(
+  const { latestItems, toggleRow } = useGroupContent(
     featureSets,
     getFeatureSetIdentifier,
-    handleRemoveFeatureSet,
-    handleRequestOnExpand,
+    collapseRowCallback,
+    expandRowCallback,
     null,
     FEATURE_STORE_PAGE,
     FEATURE_SETS_TAB
@@ -391,7 +391,7 @@ const FeatureSets = ({
       featureSetsPanelIsOpen={featureSetsPanelIsOpen}
       featureStore={featureStore}
       filtersStore={filtersStore}
-      handleExpandRow={handleExpandRow}
+      toggleRow={toggleRow}
       handleRefresh={handleRefresh}
       pageData={pageData}
       ref={{ featureStoreRef }}

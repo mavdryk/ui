@@ -40,7 +40,7 @@ const FeaturesView = React.forwardRef(
       featureStore,
       filtersStore,
       getPopUpTemplate,
-      handleExpandRow,
+      toggleRow,
       handleRefresh,
       pageData,
       requestErrorMessage,
@@ -98,7 +98,7 @@ const FeaturesView = React.forwardRef(
                     isRowRendered(virtualizationConfig, index) && (
                       <FeatureStoreTableRow
                         actionsMenu={actionsMenu}
-                        handleExpandRow={handleExpandRow}
+                        toggleRow={toggleRow}
                         key={tableItem.data.ui.identifier}
                         hideActionsMenu={tableStore.isTablePanelOpen}
                         mainRowItemsCount={2}
@@ -124,7 +124,7 @@ FeaturesView.propTypes = {
   featureStore: PropTypes.object.isRequired,
   filtersStore: PropTypes.object.isRequired,
   getPopUpTemplate: PropTypes.func.isRequired,
-  handleExpandRow: PropTypes.func.isRequired,
+  toggleRow: PropTypes.func.isRequired,
   handleRefresh: PropTypes.func.isRequired,
   pageData: PropTypes.object.isRequired,
   requestErrorMessage: PropTypes.string.isRequired,

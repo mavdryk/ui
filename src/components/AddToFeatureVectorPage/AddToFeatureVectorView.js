@@ -43,7 +43,7 @@ const AddToFeatureVectorView = React.forwardRef(
       convertedYaml,
       featureStore,
       filtersStore,
-      handleExpandRow,
+      toggleRow,
       handleRefresh,
       pageData,
       requestErrorMessage,
@@ -99,7 +99,7 @@ const AddToFeatureVectorView = React.forwardRef(
                       isRowRendered(virtualizationConfig, index) && (
                         <FeatureStoreTableRow
                           actionsMenu={actionsMenu}
-                          handleExpandRow={handleExpandRow}
+                          toggleRow={toggleRow}
                           key={index}
                           hideActionsMenu={tableStore.isTablePanelOpen}
                           mainRowItemsCount={2}
@@ -129,7 +129,7 @@ AddToFeatureVectorView.propTypes = {
   convertedYaml: PropTypes.string.isRequired,
   featureStore: PropTypes.object.isRequired,
   filtersStore: PropTypes.object.isRequired,
-  handleExpandRow: PropTypes.func.isRequired,
+  toggleRow: PropTypes.func.isRequired,
   handleRefresh: PropTypes.func.isRequired,
   pageData: PropTypes.object.isRequired,
   requestErrorMessage: PropTypes.string.isRequired,

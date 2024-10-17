@@ -33,7 +33,7 @@ import './tableLinkCell.scss'
 const TableLinkCell = ({
   className = '',
   data = {},
-  handleExpandRow,
+  toggleRow,
   item,
   link,
   selectItem,
@@ -122,7 +122,7 @@ const TableLinkCell = ({
       {showExpandButton && (
         <Arrow
           onClick={e => {
-            handleExpandRow(e, item)
+            toggleRow(e, item)
           }}
           className="expand-arrow"
         />

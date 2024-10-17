@@ -53,7 +53,7 @@ const DatasetsView = React.forwardRef(
       detailsFormInitialValues,
       filtersStore,
       getAndSetSelectedArtifact,
-      handleExpandRow,
+      toggleRow,
       handleRefresh,
       handleRegisterDataset,
       maxArtifactsErrorIsShown,
@@ -141,7 +141,7 @@ const DatasetsView = React.forwardRef(
                         isRowRendered(virtualizationConfig, index) && (
                           <ArtifactsTableRow
                             actionsMenu={actionsMenu}
-                            handleExpandRow={handleExpandRow}
+                            toggleRow={toggleRow}
                             key={tableItem.data.ui.identifier}
                             rowIndex={index}
                             rowItem={tableItem}
@@ -190,7 +190,7 @@ DatasetsView.propTypes = {
   detailsFormInitialValues: PropTypes.object.isRequired,
   getAndSetSelectedArtifact: PropTypes.func.isRequired,
   filtersStore: PropTypes.object.isRequired,
-  handleExpandRow: PropTypes.func.isRequired,
+  toggleRow: PropTypes.func.isRequired,
   handleRefresh: PropTypes.func.isRequired,
   handleRegisterDataset: PropTypes.func.isRequired,
   maxArtifactsErrorIsShown: PropTypes.bool.isRequired,

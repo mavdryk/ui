@@ -37,7 +37,7 @@ import { isRowExpanded, PARENT_ROW_EXPANDED_CLASS } from '../../utils/tableRows.
 
 const FeatureStoreTableRow = ({
   actionsMenu,
-  handleExpandRow = () => {},
+  toggleRow = () => {},
   handleSelectItem = () => {},
   hideActionsMenu = false,
   mainRowItemsCount = 1,
@@ -88,7 +88,7 @@ const FeatureStoreTableRow = ({
                           className={cellClassName}
                           data={data}
                           firstCell={index === 0}
-                          handleExpandRow={handleExpandRow}
+                          toggleRow={toggleRow}
                           item={rowItem}
                           key={data.id}
                           link={
@@ -188,7 +188,7 @@ const FeatureStoreTableRow = ({
                   className={cellClassNames}
                   data={value}
                   firstCell={index === 0}
-                  handleExpandRow={handleExpandRow}
+                  toggleRow={toggleRow}
                   item={rowItem.data}
                   key={value.id}
                   link={value.getLink?.(params.tab ?? DETAILS_OVERVIEW_TAB)}
@@ -212,7 +212,7 @@ const FeatureStoreTableRow = ({
 
 FeatureStoreTableRow.propTypes = {
   actionsMenu: ACTIONS_MENU.isRequired,
-  handleExpandRow: PropTypes.func,
+  toggleRow: PropTypes.func,
   handleSelectItem: PropTypes.func,
   hideActionsMenu: PropTypes.bool,
   mainRowItemsCount: PropTypes.number,

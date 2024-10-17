@@ -49,7 +49,7 @@ const ModelsView = React.forwardRef(
       detailsFormInitialValues,
       filtersStore,
       getAndSetSelectedArtifact,
-      handleExpandRow,
+      toggleRow,
       handleRefresh,
       handleRegisterModel,
       handleTrainModel,
@@ -148,7 +148,7 @@ const ModelsView = React.forwardRef(
                       isRowRendered(virtualizationConfig, index) && (
                         <ArtifactsTableRow
                           actionsMenu={actionsMenu}
-                          handleExpandRow={handleExpandRow}
+                          toggleRow={toggleRow}
                           rowIndex={index}
                           key={tableItem.data.ui.identifier}
                           rowItem={tableItem}
@@ -188,7 +188,7 @@ ModelsView.propTypes = {
   artifactsStore: PropTypes.object.isRequired,
   filtersStore: PropTypes.object.isRequired,
   getAndSetSelectedArtifact: PropTypes.func.isRequired,
-  handleExpandRow: PropTypes.func.isRequired,
+  toggleRow: PropTypes.func.isRequired,
   handleRefresh: PropTypes.func.isRequired,
   handleRegisterModel: PropTypes.func.isRequired,
   handleTrainModel: PropTypes.func.isRequired,
