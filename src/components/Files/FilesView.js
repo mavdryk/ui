@@ -53,7 +53,6 @@ const FilesView = React.forwardRef(
       files,
       filtersStore,
       getAndSetSelectedArtifact,
-      handleExpandRow,
       handleRefresh,
       handleRegisterArtifact,
       handleSelectFile,
@@ -62,14 +61,15 @@ const FilesView = React.forwardRef(
       requestErrorMessage,
       selectedFile,
       selectedRowData,
-      setMaxArtifactsErrorIsShown,
       setFiles,
+      setMaxArtifactsErrorIsShown,
       setSelectedFileMin,
       setSelectedRowData,
       sortProps,
       tableContent,
       tableHeaders,
       toggleConvertedYaml,
+      toggleRow,
       viewMode = null,
       virtualizationConfig
     },
@@ -142,13 +142,13 @@ const FilesView = React.forwardRef(
                         isRowRendered(virtualizationConfig, index) && (
                           <ArtifactsTableRow
                             actionsMenu={actionsMenu}
-                            handleExpandRow={handleExpandRow}
                             handleSelectItem={handleSelectFile}
                             key={tableItem.data.ui.identifier}
                             rowIndex={index}
                             rowItem={tableItem}
                             selectedItem={selectedFile}
                             selectedRowData={selectedRowData}
+                            toggleRow={toggleRow}
                           />
                         )
                     )}
@@ -192,7 +192,6 @@ FilesView.propTypes = {
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   filtersStore: PropTypes.object.isRequired,
   getAndSetSelectedArtifact: PropTypes.func.isRequired,
-  handleExpandRow: PropTypes.func.isRequired,
   handleRefresh: PropTypes.func.isRequired,
   handleRegisterArtifact: PropTypes.func.isRequired,
   handleSelectFile: PropTypes.func.isRequired,
@@ -207,6 +206,7 @@ FilesView.propTypes = {
   tableContent: PropTypes.arrayOf(PropTypes.object).isRequired,
   tableHeaders: PropTypes.arrayOf(PropTypes.object).isRequired,
   toggleConvertedYaml: PropTypes.func.isRequired,
+  toggleRow: PropTypes.func.isRequired,
   viewMode: PropTypes.string,
   virtualizationConfig: VIRTUALIZATION_CONFIG.isRequired
 }

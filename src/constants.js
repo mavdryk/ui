@@ -66,6 +66,15 @@ export const ERROR_STATE = 'error'
 export const FAIL_STATE = 'fail'
 export const FAILED_STATE = 'failed'
 
+/*=========== PAGINATION =============*/
+
+export const BE_PAGE = 'bePage'
+export const FE_PAGE = 'fePage'
+export const BE_PAGE_SIZE = 'bePageSize'
+export const FE_PAGE_SIZE = 'fePageSize'
+export const FE_PAGE_START = 'fePageStart'
+export const FE_PAGE_END = 'fePageEnd'
+
 /*=========== PAGES & TABS =============*/
 
 export const PROJECTS_PAGE = 'PROJECTS'

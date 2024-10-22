@@ -53,7 +53,6 @@ const DatasetsView = React.forwardRef(
       detailsFormInitialValues,
       filtersStore,
       getAndSetSelectedArtifact,
-      handleExpandRow,
       handleRefresh,
       handleRegisterDataset,
       maxArtifactsErrorIsShown,
@@ -69,6 +68,7 @@ const DatasetsView = React.forwardRef(
       tableContent,
       tableHeaders,
       toggleConvertedYaml,
+      toggleRow,
       viewMode = null,
       virtualizationConfig
     },
@@ -141,12 +141,12 @@ const DatasetsView = React.forwardRef(
                         isRowRendered(virtualizationConfig, index) && (
                           <ArtifactsTableRow
                             actionsMenu={actionsMenu}
-                            handleExpandRow={handleExpandRow}
                             key={tableItem.data.ui.identifier}
                             rowIndex={index}
                             rowItem={tableItem}
                             selectedItem={selectedDataset}
                             selectedRowData={selectedRowData}
+                            toggleRow={toggleRow}
                           />
                         )
                     )}
@@ -188,9 +188,8 @@ DatasetsView.propTypes = {
   convertedYaml: PropTypes.string.isRequired,
   datasets: PropTypes.arrayOf(PropTypes.object).isRequired,
   detailsFormInitialValues: PropTypes.object.isRequired,
-  getAndSetSelectedArtifact: PropTypes.func.isRequired,
   filtersStore: PropTypes.object.isRequired,
-  handleExpandRow: PropTypes.func.isRequired,
+  getAndSetSelectedArtifact: PropTypes.func.isRequired,
   handleRefresh: PropTypes.func.isRequired,
   handleRegisterDataset: PropTypes.func.isRequired,
   maxArtifactsErrorIsShown: PropTypes.bool.isRequired,
@@ -206,6 +205,7 @@ DatasetsView.propTypes = {
   tableContent: PropTypes.arrayOf(PropTypes.object).isRequired,
   tableHeaders: PropTypes.arrayOf(PropTypes.object).isRequired,
   toggleConvertedYaml: PropTypes.func.isRequired,
+  toggleRow: PropTypes.func.isRequired,
   viewMode: PropTypes.string,
   virtualizationConfig: VIRTUALIZATION_CONFIG.isRequired
 }

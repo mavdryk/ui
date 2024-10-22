@@ -36,9 +36,6 @@ import {
   DATES_FILTER,
   NAME_FILTER,
   SHOW_UNTAGGED_FILTER,
-  FUNCTION_FILTERS,
-  FILTER_MENU,
-  FILTER_MENU_MODAL
 } from '../../constants'
 import {
   checkForSelectedFunction,
@@ -48,11 +45,6 @@ import {
   searchFunctionItem,
   setFullSelectedFunction
 } from './functions.util'
-import {
-  ANY_TIME_DATE_OPTION,
-  datePickerPastOptions,
-  getDatePickerFilterValue
-} from '../../utils/datePicker.util'
 import createFunctionsRowData from '../../utils/createFunctionsRowData'
 import functionsActions from '../../actions/functions'
 import jobsActions from '../../actions/jobs'
@@ -63,16 +55,13 @@ import { isBackgroundTaskRunning } from '../../utils/poll.util'
 import { isDetailsTabExists } from '../../utils/link-helper.util'
 import { openPopUp } from 'igz-controls/utils/common.util'
 import { parseFunctions } from '../../utils/parseFunctions'
-import { setFilters, setFiltersValues, setModalFiltersValues } from '../../reducers/filtersReducer'
+import { setFilters } from '../../reducers/filtersReducer'
 import { setNotification } from '../../reducers/notificationReducer'
 import { showErrorNotification } from '../../utils/notifications.util'
 import { useGroupContent } from '../../hooks/groupContent.hook'
 import { useMode } from '../../hooks/mode.hook'
-import { useVirtualization } from '../../hooks/useVirtualization.hook'
+import { usePagination } from '../../hooks/usePagination.hook'
 import { useYaml } from '../../hooks/yaml.hook'
-import { useInitialTableFetch } from '../../hooks/useInitialTableFetch.hook'
-
-import cssVariables from './functions.scss'
 
 const Functions = ({
   deleteFunction,
@@ -96,12 +85,13 @@ const Functions = ({
   const [jobWizardIsOpened, setJobWizardIsOpened] = useState(false)
   const [jobWizardMode, setJobWizardMode] = useState(null)
   const filtersStore = useSelector(store => store.filtersStore)
-  const [selectedRowData, setSelectedRowData] = useState({})
+  const [expandedRowsData, setExpandedRowsData] = useState({})
   const [requestErrorMessage, setRequestErrorMessage] = useState('')
   const [deletingFunctions, setDeletingFunctions] = useState({})
   const abortControllerRef = useRef(new AbortController())
   const fetchFunctionLogsTimeout = useRef(null)
   const fetchFunctionNuclioLogsTimeout = useRef(null)
+  const paginationConfigRef = useRef({})
   const terminatePollRef = useRef(null)
   const { isDemoMode, isStagingMode } = useMode()
   const params = useParams()
@@ -122,22 +112,96 @@ const Functions = ({
     setDeletingFunctions({})
   }, [])
 
+  const expandRowCallback = useCallback(
+    (func, content) => {
+      console.log('content', content)
+      const funcIdentifier = getFunctionIdentifier(func)
+
+      setExpandedRowsData(state => {
+        return {
+          ...state,
+          [funcIdentifier]: {
+            content: content[func.name].map(contentItem =>
+              createFunctionsRowData(contentItem, params.projectName, false)
+            )
+          }
+        }
+      })
+    },
+    [params.projectName]
+  )
+
+  const collapseRowCallback = useCallback(
+    func => {
+      const funcIdentifier = getFunctionIdentifier(func.data)
+      const newPageDataExpandedRowsData = { ...expandedRowsData }
+
+      delete newPageDataExpandedRowsData[funcIdentifier]
+
+      setExpandedRowsData(newPageDataExpandedRowsData)
+    },
+    [expandedRowsData]
+  )
+
+  const toggleAllRowsCallback = useCallback(
+    (collapse, content) => {
+      const newExpandedRowsData = {}
+      if (collapse) {
+        setExpandedRowsData({})
+      } else {
+        Object.entries(content).forEach(([key, value]) => {
+          newExpandedRowsData[key] = {
+            content: value.map(contentItem =>
+              createFunctionsRowData(contentItem, params.projectName, false)
+            )
+          }
+        })
+      }
+
+      setExpandedRowsData(newExpandedRowsData)
+    },
+    [params.projectName]
+  )
+
+  const { latestItems, toggleRow, allRowsAreExpanded, handleExpandAll } = useGroupContent(
+    functions,
+    getFunctionIdentifier,
+    collapseRowCallback,
+    expandRowCallback,
+    null,
+    FUNCTIONS_PAGE,
+    null,
+    toggleAllRowsCallback,
+    paginationConfigRef.current
+  )
+
+  const tableContent = useMemo(
+    () =>
+      latestItems.map(contentItem => createFunctionsRowData(contentItem, params.projectName, true)),
+    [latestItems, params.projectName]
+  )
+
   const fetchData = useCallback(
     filters => {
       terminateDeleteTasksPolling()
       abortControllerRef.current = new AbortController()
 
-      return fetchFunctions(params.projectName, filters, {
-        ui: {
-          controller: abortControllerRef.current,
-          setRequestErrorMessage
+      return fetchFunctions(
+        params.projectName,
+        filters,
+        {
+          ui: {
+            controller: abortControllerRef.current,
+            setRequestErrorMessage
+          },
+          params: {
+            format: 'minimal'
+          }
         },
-        params: {
-          format: 'minimal'
-        }
-      }).then(functions => {
-        if (functions?.length > 0) {
-          const newFunctions = parseFunctions(functions, params.projectName)
+        paginationConfigRef.current
+      ).then(response => {
+        if (response?.funcs?.length > 0) {
+          const newFunctions = parseFunctions(response.funcs, params.projectName)
           const deletingFunctions = newFunctions.reduce((acc, func) => {
             if (func.deletion_task_id && !func.deletion_error && !acc[func.deletion_task_id]) {
               acc[func.deletion_task_id] = {
@@ -160,23 +224,28 @@ const Functions = ({
           }
 
           setFunctions(newFunctions)
+          paginationConfigRef.current.paginationResponse = response.pagination
 
           return newFunctions
         } else {
-          const paramsFunction = searchFunctionItem(
-            params.hash,
-            params.funcName,
-            params.tag,
-            params.projectName,
-            [],
-            dispatch,
-            true
-          )
-
-          if (!paramsFunction) {
-            navigate(`/projects/${params.projectName}/functions`, { replace: true })
-          }
           setFunctions([])
+          paginationConfigRef.current.paginationResponse = response.pagination
+
+          if (response.pagination.page === 1) {
+            const paramsFunction = searchFunctionItem(
+              params.hash,
+              params.funcName,
+              params.tag,
+              params.projectName,
+              [],
+              dispatch,
+              true
+            )
+
+            if (!paramsFunction) {
+              navigate(`/projects/${params.projectName}/functions`, { replace: true })
+            }
+          }
         }
       })
     },
@@ -195,76 +264,13 @@ const Functions = ({
   const refreshFunctions = useCallback(
     filters => {
       setFunctions([])
+      paginationConfigRef.current.paginationResponse = {}
       setSelectedFunctionMin({})
-      setSelectedRowData({})
+      setExpandedRowsData({})
 
       return fetchData(filters)
     },
     [fetchData]
-  )
-
-  const handleExpand = useCallback(
-    (func, content) => {
-      const funcIdentifier = getFunctionIdentifier(func)
-
-      setSelectedRowData(state => {
-        return {
-          ...state,
-          [funcIdentifier]: {
-            content: content[func.name].map(contentItem =>
-              createFunctionsRowData(contentItem, params.projectName, false)
-            )
-          }
-        }
-      })
-    },
-    [params.projectName]
-  )
-
-  const handleCollapse = useCallback(
-    func => {
-      const funcIdentifier = getFunctionIdentifier(func.data)
-      const newPageDataSelectedRowData = { ...selectedRowData }
-
-      delete newPageDataSelectedRowData[funcIdentifier]
-
-      setSelectedRowData(newPageDataSelectedRowData)
-    },
-    [selectedRowData]
-  )
-
-  const handleExpandAllCallback = (collapse, content) => {
-    const newSelectedRowData = {}
-    if (collapse) {
-      setSelectedRowData({})
-    } else {
-      Object.entries(content).forEach(([key, value]) => {
-        newSelectedRowData[key] = {
-          content: value.map(contentItem =>
-            createFunctionsRowData(contentItem, params.projectName, false)
-          )
-        }
-      })
-    }
-
-    setSelectedRowData(newSelectedRowData)
-  }
-
-  const { latestItems, handleExpandRow, expand, handleExpandAll } = useGroupContent(
-    functions,
-    getFunctionIdentifier,
-    handleCollapse,
-    handleExpand,
-    null,
-    FUNCTIONS_PAGE,
-    null,
-    handleExpandAllCallback
-  )
-
-  const tableContent = useMemo(
-    () =>
-      latestItems.map(contentItem => createFunctionsRowData(contentItem, params.projectName, true)),
-    [latestItems, params.projectName]
   )
 
   const handleRemoveLogs = useCallback(() => {
@@ -541,49 +547,14 @@ const Functions = ({
     )
   }, [dispatch, fetchFunction, navigate, params.projectName, selectedFunctionMin])
 
-  const setInitialFilters = useCallback(() => {
-    if (params.funcName || (params.hash && params.hash.includes('@'))) {
-      const funcName = params.funcName || params.hash.split('@')[0]
-      const dateFilterValues = getDatePickerFilterValue(datePickerPastOptions, ANY_TIME_DATE_OPTION)
-
-      dispatch(
-        setFiltersValues({
-          name: FUNCTION_FILTERS,
-          value: {
-            [NAME_FILTER]: funcName,
-            [DATES_FILTER]: dateFilterValues
-          }
-        })
-      )
-      dispatch(
-        setModalFiltersValues({
-          name: FUNCTION_FILTERS,
-          value: {
-            [SHOW_UNTAGGED_FILTER]: true
-          }
-        })
-      )
-    }
-  }, [dispatch, params.funcName, params.hash])
-
-  useInitialTableFetch({
-    fetchData,
-    setExpandedRowsData: setSelectedRowData,
-    createRowData: rowItem => createFunctionsRowData(rowItem, params.projectName),
-    setInitialFilters,
-    filters: {
-      ...filtersStore[FILTER_MENU][FUNCTION_FILTERS].values,
-      ...filtersStore[FILTER_MENU_MODAL][FUNCTION_FILTERS].values
-    }
-  })
-
   useEffect(() => {
     const abortController = abortControllerRef.current
 
     return () => {
       setSelectedFunctionMin({})
       setFunctions([])
-      setSelectedRowData({})
+      paginationConfigRef.current.paginationResponse = {}
+      setExpandedRowsData({})
       abortController.abort(REQUEST_CANCELED)
     }
   }, [params.projectName])
@@ -597,14 +568,15 @@ const Functions = ({
   useEffect(() => {
     checkForSelectedFunction(
       params.funcName,
-      selectedRowData,
+      expandedRowsData,
       functions,
       params.hash,
       params.tag,
       navigate,
       params.projectName,
       setSelectedFunctionMin,
-      dispatch
+      dispatch,
+      paginationConfigRef.current
     )
   }, [
     dispatch,
@@ -614,20 +586,24 @@ const Functions = ({
     params.hash,
     params.projectName,
     params.tag,
-    selectedRowData
+    expandedRowsData
   ])
 
   useEffect(() => {
     dispatch(setFilters({ groupBy: GROUP_BY_NAME }))
   }, [dispatch, params.projectName])
 
-  const filtersChangeCallback = filters => {
+  const filtersChangeCallback = (filters, filtersChange) => {
+    if (filtersChange) {
+      resetPagination()
+    }
+
     refreshFunctions(filters)
   }
 
-  const retryRequestCallback = () => {
+  const retryRequestCallback = useCallback(() => {
     refreshFunctions(functionsFilters)
-  }
+  }, [functionsFilters, refreshFunctions])
 
   const handleSelectFunction = item => {
     if (document.getElementsByClassName('view')[0]) {
@@ -723,6 +699,10 @@ const Functions = ({
     setSelectedFunctionMin({})
   }
 
+  const pageChangeCallback = useCallback(() => {
+    handleExpandAll(true)
+  }, [handleExpandAll])
+
   useEffect(() => {
     if (!jobWizardIsOpened && jobWizardMode) {
       openPopUp(JobWizard, {
@@ -738,29 +718,25 @@ const Functions = ({
     }
   }, [editableItem, jobWizardIsOpened, jobWizardMode, params])
 
-  const virtualizationConfig = useVirtualization({
+  const [resetPagination] = usePagination({
     rowsData: {
-      content: tableContent,
-      expandedRowsData: selectedRowData,
-      selectedItem: selectedFunction
+      content: functions,
+      tableContent
     },
-    heightData: {
-      headerRowHeight: cssVariables.functionsHeaderRowHeight,
-      rowHeight: cssVariables.functionsRowHeight,
-      rowHeightExtended: cssVariables.functionsRowHeightExtended
-    },
-    activateTableScroll: true
+    refreshContent: retryRequestCallback,
+    paginationConfigRef
   })
 
   return (
     <FunctionsView
       actionsMenu={actionsMenu}
+      allRowsAreExpanded={allRowsAreExpanded}
       closePanel={closePanel}
       confirmData={confirmData}
       convertedYaml={convertedYaml}
       createFunctionSuccess={createFunctionSuccess}
       editableItem={editableItem}
-      expand={expand}
+      expandedRowsData={expandedRowsData}
       filtersChangeCallback={filtersChangeCallback}
       filtersStore={filtersStore}
       functions={functions}
@@ -772,17 +748,17 @@ const Functions = ({
       handleDeployFunctionFailure={handleDeployFunctionFailure}
       handleDeployFunctionSuccess={handleDeployFunctionSuccess}
       handleExpandAll={handleExpandAll}
-      handleExpandRow={handleExpandRow}
       handleSelectFunction={handleSelectFunction}
       isDemoMode={isDemoMode}
+      pageChangeCallback={pageChangeCallback}
       pageData={pageData}
-      retryRequest={retryRequestCallback}
+      paginationConfig={paginationConfigRef.current}
       requestErrorMessage={requestErrorMessage}
+      retryRequest={retryRequestCallback}
       selectedFunction={selectedFunction}
-      selectedRowData={selectedRowData}
       tableContent={tableContent}
       toggleConvertedYaml={toggleConvertedYaml}
-      virtualizationConfig={virtualizationConfig}
+      toggleRow={toggleRow}
     />
   )
 }

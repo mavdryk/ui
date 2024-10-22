@@ -43,7 +43,6 @@ const FeatureVectorsView = React.forwardRef(
       featureStore,
       featureVectors,
       filtersStore,
-      handleExpandRow,
       handleRefresh,
       pageData,
       requestErrorMessage,
@@ -52,6 +51,7 @@ const FeatureVectorsView = React.forwardRef(
       setCreateVectorPopUpIsOpen,
       setSelectedFeatureVector,
       tableContent,
+      toggleRow,
       virtualizationConfig
     },
     { featureStoreRef }
@@ -99,13 +99,13 @@ const FeatureVectorsView = React.forwardRef(
                   isRowRendered(virtualizationConfig, index) && (
                     <FeatureStoreTableRow
                       actionsMenu={actionsMenu}
-                      handleExpandRow={handleExpandRow}
                       key={tableItem.data?.ui?.identifier ?? index}
                       pageTab={FEATURE_VECTORS_TAB}
                       rowIndex={index}
                       rowItem={tableItem}
                       selectedItem={selectedFeatureVector}
                       selectedRowData={selectedRowData}
+                      toggleRow={toggleRow}
                     />
                   )
               )}
@@ -133,7 +133,6 @@ FeatureVectorsView.propTypes = {
   featureStore: PropTypes.object.isRequired,
   featureVectors: PropTypes.arrayOf(PropTypes.object).isRequired,
   filtersStore: PropTypes.object.isRequired,
-  handleExpandRow: PropTypes.func.isRequired,
   handleRefresh: PropTypes.func.isRequired,
   pageData: PropTypes.object.isRequired,
   requestErrorMessage: PropTypes.string.isRequired,
@@ -142,6 +141,7 @@ FeatureVectorsView.propTypes = {
   setCreateVectorPopUpIsOpen: PropTypes.func.isRequired,
   setSelectedFeatureVector: PropTypes.func.isRequired,
   tableContent: PropTypes.arrayOf(PropTypes.object).isRequired,
+  toggleRow: PropTypes.func.isRequired,
   virtualizationConfig: VIRTUALIZATION_CONFIG.isRequired
 }
 

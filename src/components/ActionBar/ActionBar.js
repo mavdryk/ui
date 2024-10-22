@@ -170,7 +170,7 @@ const ActionBar = ({
         removeSelectedItem && dispatch(removeSelectedItem({}))
         setSelectedRowData && setSelectedRowData({})
         handleExpandAll && handleExpandAll(true)
-        handleRefresh({ ...formValues, ...filterMenuModal })
+        handleRefresh({ ...formValues, ...filterMenuModal }, true)
       }
     },
     [

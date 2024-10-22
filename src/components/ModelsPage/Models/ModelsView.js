@@ -49,7 +49,6 @@ const ModelsView = React.forwardRef(
       detailsFormInitialValues,
       filtersStore,
       getAndSetSelectedArtifact,
-      handleExpandRow,
       handleRefresh,
       handleRegisterModel,
       handleTrainModel,
@@ -67,6 +66,7 @@ const ModelsView = React.forwardRef(
       sortProps = null,
       tableContent,
       tableHeaders,
+      toggleRow,
       urlTagOption = null,
       viewMode = null,
       virtualizationConfig
@@ -148,13 +148,13 @@ const ModelsView = React.forwardRef(
                       isRowRendered(virtualizationConfig, index) && (
                         <ArtifactsTableRow
                           actionsMenu={actionsMenu}
-                          handleExpandRow={handleExpandRow}
-                          rowIndex={index}
                           key={tableItem.data.ui.identifier}
+                          rowIndex={index}
                           rowItem={tableItem}
                           selectedItem={selectedModel}
                           selectedRowData={selectedRowData}
                           tab={MODELS_TAB}
+                          toggleRow={toggleRow}
                         />
                       )
                   )}
@@ -188,7 +188,6 @@ ModelsView.propTypes = {
   artifactsStore: PropTypes.object.isRequired,
   filtersStore: PropTypes.object.isRequired,
   getAndSetSelectedArtifact: PropTypes.func.isRequired,
-  handleExpandRow: PropTypes.func.isRequired,
   handleRefresh: PropTypes.func.isRequired,
   handleRegisterModel: PropTypes.func.isRequired,
   handleTrainModel: PropTypes.func.isRequired,
@@ -206,6 +205,7 @@ ModelsView.propTypes = {
   sortProps: SORT_PROPS,
   tableContent: PropTypes.arrayOf(PropTypes.object).isRequired,
   tableHeaders: PropTypes.arrayOf(PropTypes.object).isRequired,
+  toggleRow: PropTypes.func.isRequired,
   viewMode: PropTypes.string,
   virtualizationConfig: VIRTUALIZATION_CONFIG.isRequired
 }

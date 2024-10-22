@@ -194,7 +194,7 @@ const AddToFeatureVectorPage = ({
     return fetchData(filters)
   }
 
-  const handleRemoveFeature = useCallback(
+  const collapseRowCallback = useCallback(
     feature => {
       const newStoreSelectedRowData = {
         ...featureStore.features.selectedRowData.content
@@ -210,7 +210,7 @@ const AddToFeatureVectorPage = ({
     [featureStore.features.selectedRowData.content, removeFeature, selectedRowData]
   )
 
-  const handleRequestOnExpand = useCallback(
+  const expandRowCallback = useCallback(
     async feature => {
       const featureIdentifier = getFeatureIdentifier(feature)
 
@@ -251,11 +251,11 @@ const AddToFeatureVectorPage = ({
     [fetchFeature, tableStore.isTablePanelOpen]
   )
 
-  const { latestItems, handleExpandRow } = useGroupContent(
+  const { latestItems, toggleRow } = useGroupContent(
     content,
     getFeatureIdentifier,
-    handleRemoveFeature,
-    handleRequestOnExpand,
+    collapseRowCallback,
+    expandRowCallback,
     null,
     FEATURE_STORE_PAGE,
     FEATURES_TAB
@@ -327,7 +327,6 @@ const AddToFeatureVectorPage = ({
       convertedYaml={convertedYaml}
       featureStore={featureStore}
       filtersStore={filtersStore}
-      handleExpandRow={handleExpandRow}
       handleRefresh={handleRefresh}
       pageData={pageData}
       ref={addToFeatureVectorPageRef}
@@ -336,6 +335,7 @@ const AddToFeatureVectorPage = ({
       tableContent={tableContent}
       tableStore={tableStore}
       toggleConvertedYaml={toggleConvertedYaml}
+      toggleRow={toggleRow}
       virtualizationConfig={virtualizationConfig}
     />
   )

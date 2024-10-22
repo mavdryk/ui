@@ -70,9 +70,9 @@ const CreateJobPage = ({
   }, [fetchProjectsNames, params.projectName, projects.length])
 
   useEffect(() => {
-    fetchFunctions(selectedProject, {}, {}, setRequestErrorMessage).then(functions => {
-      if (functions) {
-        const filteredFunctions = functions.filter(func => includes(FUNCTION_RUN_KINDS, func.kind))
+    fetchFunctions(selectedProject, {}, {}, {}, setRequestErrorMessage).then(response => {
+      if (response?.funcs) {
+        const filteredFunctions = response.funcs.filter(func => includes(FUNCTION_RUN_KINDS, func.kind))
 
         const groupedFunctions = Object.values(
           filteredFunctions.reduce((prev, curr) => {

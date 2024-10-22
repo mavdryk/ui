@@ -215,7 +215,7 @@ const Files = () => {
     ]
   )
 
-  const handleRemoveRowData = useCallback(
+  const collapseRowCallback = useCallback(
     file => {
       const newStoreSelectedRowData = {
         ...artifactsStore.files.selectedRowData.content
@@ -231,7 +231,7 @@ const Files = () => {
     [artifactsStore.files.selectedRowData.content, dispatch, selectedRowData]
   )
 
-  const handleExpand = useCallback(
+  const expandRowCallback = useCallback(
     (file, content) => {
       const fileIdentifier = getArtifactIdentifier(file)
 
@@ -249,11 +249,11 @@ const Files = () => {
     [params.projectName]
   )
 
-  const { latestItems, handleExpandRow } = useGroupContent(
+  const { latestItems, toggleRow } = useGroupContent(
     files,
     getArtifactIdentifier,
-    handleRemoveRowData,
-    handleExpand,
+    collapseRowCallback,
+    expandRowCallback,
     null,
     FILES_PAGE
   )
@@ -402,7 +402,6 @@ const Files = () => {
       files={files}
       filtersStore={filtersStore}
       getAndSetSelectedArtifact={getAndSetSelectedArtifact}
-      handleExpandRow={handleExpandRow}
       handleRefresh={handleRefresh}
       handleRegisterArtifact={handleRegisterArtifact}
       handleSelectFile={handleSelectFile}
@@ -420,6 +419,7 @@ const Files = () => {
       tableContent={sortedTableContent}
       tableHeaders={sortedTableHeaders}
       toggleConvertedYaml={toggleConvertedYaml}
+      toggleRow={toggleRow}
       viewMode={viewMode}
       virtualizationConfig={virtualizationConfig}
     />

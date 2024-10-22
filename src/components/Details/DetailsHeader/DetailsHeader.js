@@ -34,7 +34,7 @@ import { formatDatetime } from '../../../utils'
 import { TERTIARY_BUTTON } from 'igz-controls/constants'
 import { ACTIONS_MENU } from '../../../types'
 import { getViewMode } from '../../../utils/helper'
-import { generateUrlFromRouterPath } from '../../../utils/link-helper.util'
+import { generateUrlFromRouterPath, getDefaultCloseDetailsLink } from '../../../utils/link-helper.util'
 
 import { ReactComponent as Close } from 'igz-controls/images/close.svg'
 import { ReactComponent as Back } from 'igz-controls/images/back-arrow.svg'
@@ -118,11 +118,13 @@ const DetailsHeader = ({
           {isDetailsScreen && !pageData.details.hideBackBtn && (
             <Link
               className="item-header__back-btn"
-              to={generateUrlFromRouterPath(
+              to={
                 getCloseDetailsLink
-                  ? getCloseDetailsLink(window.location, selectedItem.name)
-                  : window.location.pathname.split('/').slice(0, -2).join('/')
-              )}
+                  ? getCloseDetailsLink(selectedItem.name)
+                  : generateUrlFromRouterPath(
+                      window.location.pathname.split('/').slice(0, -2).join('/')
+                    )
+              }
               onClick={handleBackClick}
             >
               <RoundedIcon id="go-back" tooltipText="Go to list">
@@ -297,10 +299,8 @@ const DetailsHeader = ({
               data-testid="details-close-btn"
               to={
                 getCloseDetailsLink
-                  ? generateUrlFromRouterPath(getCloseDetailsLink(window.location, selectedItem.name))
-                  : `/projects/${params.projectName}/${pageData.page.toLowerCase()}${
-                      params.pageTab ? `/${params.pageTab}` : tab ? `/${tab}` : ''
-                    }`
+                  ? getCloseDetailsLink(selectedItem.name)
+                  : getDefaultCloseDetailsLink(params, pageData.page, tab)
               }
               onClick={handleCancelClick}
             >

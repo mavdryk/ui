@@ -219,7 +219,7 @@ export const fetchArtifactsFunctions = createAsyncThunk(
     config?.ui?.setRequestErrorMessage?.('')
 
     return functionsApi
-      .getFunctions(project, filters, config, null)
+      .getFunctions(project, filters, config, {}, null)
       .then(({ data }) => {
         return parseFunctions(
           data.funcs.filter(

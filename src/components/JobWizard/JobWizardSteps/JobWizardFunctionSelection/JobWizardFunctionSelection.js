@@ -243,10 +243,10 @@ const JobWizardFunctionSelection = ({
 
   const onSelectedProjectNameChange = currentValue => {
     dispatch(
-      functionsActions.fetchFunctions(currentValue, {}, {}, setFunctionsRequestErrorMessage)
-    ).then(functions => {
-      if (functions) {
-        const validFunctions = functions.filter(func => {
+      functionsActions.fetchFunctions(currentValue, {}, {}, {}, setFunctionsRequestErrorMessage)
+    ).then(response => {
+      if (response?.funcs) {
+        const validFunctions = response.funcs.filter(func => {
           return includes(FUNCTION_RUN_KINDS, func.kind)
         })
 

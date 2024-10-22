@@ -249,7 +249,7 @@ const Datasets = () => {
     handleRefresh(datasetsFilters)
   }
 
-  const handleExpand = useCallback(
+  const expandRowCallback = useCallback(
     (dataset, content) => {
       const dataSetIdentifier = getArtifactIdentifier(dataset)
 
@@ -269,7 +269,7 @@ const Datasets = () => {
     [params.projectName]
   )
 
-  const handleRemoveRowData = useCallback(
+  const collapseRowCallback = useCallback(
     dataset => {
       const newStoreSelectedRowData = {
         ...artifactsStore.dataSets.selectedRowData.content
@@ -285,11 +285,11 @@ const Datasets = () => {
     [artifactsStore.dataSets.selectedRowData.content, dispatch, selectedRowData]
   )
 
-  const { latestItems, handleExpandRow } = useGroupContent(
+  const { latestItems, toggleRow } = useGroupContent(
     datasets,
     getArtifactIdentifier,
-    handleRemoveRowData,
-    handleExpand,
+    collapseRowCallback,
+    expandRowCallback,
     null,
     DATASETS_PAGE
   )
@@ -409,7 +409,6 @@ const Datasets = () => {
       detailsFormInitialValues={detailsFormInitialValues}
       filtersStore={filtersStore}
       getAndSetSelectedArtifact={getAndSetSelectedArtifact}
-      handleExpandRow={handleExpandRow}
       handleRefresh={handleRefresh}
       handleRegisterDataset={handleRegisterDataset}
       maxArtifactsErrorIsShown={maxArtifactsErrorIsShown}
@@ -426,6 +425,7 @@ const Datasets = () => {
       tableContent={sortedTableContent}
       tableHeaders={sortedTableHeaders}
       toggleConvertedYaml={toggleConvertedYaml}
+      toggleRow={toggleRow}
       viewMode={viewMode}
       virtualizationConfig={virtualizationConfig}
     />

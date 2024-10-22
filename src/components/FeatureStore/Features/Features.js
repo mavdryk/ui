@@ -151,7 +151,7 @@ const Features = ({
 
   const fetchTags = useCallback(() => {
     tagAbortControllerRef.current = new AbortController()
-    
+
     return dispatch(
       getFilterTagOptions({
         fetchTags: fetchFeatureSetsTags,
@@ -173,7 +173,7 @@ const Features = ({
     return fetchData(filters)
   }
 
-  const handleRemoveFeature = useCallback(
+  const collapseRowCallback = useCallback(
     feature => {
       const newStoreSelectedRowData =
         feature.data.ui.type === 'feature'
@@ -197,7 +197,7 @@ const Features = ({
     ]
   )
 
-  const handleRequestOnExpand = useCallback(
+  const expandRowCallback = useCallback(
     feature => {
       const featureIdentifier = getFeatureIdentifier(feature)
       const fetchData = feature.ui?.type === 'feature' ? fetchFeature : fetchEntity
@@ -239,11 +239,11 @@ const Features = ({
     [fetchEntity, fetchFeature, tableStore.isTablePanelOpen]
   )
 
-  const { latestItems, handleExpandRow } = useGroupContent(
+  const { latestItems, toggleRow } = useGroupContent(
     features,
     getFeatureIdentifier,
-    handleRemoveFeature,
-    handleRequestOnExpand,
+    collapseRowCallback,
+    expandRowCallback,
     null,
     FEATURE_STORE_PAGE,
     FEATURES_TAB
@@ -320,11 +320,10 @@ const Features = ({
   return (
     <FeaturesView
       actionsMenu={actionsMenu}
-      features={features}
       featureStore={featureStore}
+      features={features}
       filtersStore={filtersStore}
       getPopUpTemplate={getPopUpTemplate}
-      handleExpandRow={handleExpandRow}
       handleRefresh={handleRefresh}
       pageData={pageData}
       ref={{ featureStoreRef }}
@@ -332,6 +331,7 @@ const Features = ({
       selectedRowData={selectedRowData}
       tableContent={tableContent}
       tableStore={tableStore}
+      toggleRow={toggleRow}
       virtualizationConfig={virtualizationConfig}
     />
   )

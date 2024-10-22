@@ -273,7 +273,7 @@ const Models = ({ fetchModelFeatureVector }) => {
     ]
   )
 
-  const handleRemoveRowData = useCallback(
+  const collapseRowCallback = useCallback(
     model => {
       const newStoreSelectedRowData = {
         ...artifactsStore.models.selectedRowData
@@ -289,7 +289,7 @@ const Models = ({ fetchModelFeatureVector }) => {
     [artifactsStore.models.selectedRowData, dispatch, selectedRowData]
   )
 
-  const handleExpand = useCallback(
+  const expandRowCallback = useCallback(
     (model, content) => {
       const modelIdentifier = getArtifactIdentifier(model)
 
@@ -309,11 +309,11 @@ const Models = ({ fetchModelFeatureVector }) => {
     [params.projectName]
   )
 
-  const { latestItems, handleExpandRow } = useGroupContent(
+  const { latestItems, toggleRow } = useGroupContent(
     models,
     getArtifactIdentifier,
-    handleRemoveRowData,
-    handleExpand,
+    collapseRowCallback,
+    expandRowCallback,
     null,
     MODELS_PAGE,
     MODELS_TAB
@@ -519,7 +519,6 @@ const Models = ({ fetchModelFeatureVector }) => {
       detailsFormInitialValues={detailsFormInitialValues}
       filtersStore={filtersStore}
       getAndSetSelectedArtifact={getAndSetSelectedArtifact}
-      handleExpandRow={handleExpandRow}
       handleRefresh={handleRefresh}
       handleRegisterModel={handleRegisterModel}
       handleTrainModel={handleTrainModel}
@@ -538,6 +537,7 @@ const Models = ({ fetchModelFeatureVector }) => {
       sortProps={{ sortTable, selectedColumnName, getSortingIcon }}
       tableContent={sortedTableContent}
       tableHeaders={sortedTableHeaders}
+      toggleRow={toggleRow}
       viewMode={viewMode}
       virtualizationConfig={virtualizationConfig}
     />
