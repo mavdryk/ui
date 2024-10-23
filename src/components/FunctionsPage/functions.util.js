@@ -21,6 +21,7 @@ import React from 'react'
 import { debounce, get, isEmpty, isEqual } from 'lodash'
 
 import {
+  DATES_FILTER,
   DETAILS_BUILD_LOG_TAB,
   FUNCTION_CREATING_STATE,
   ERROR_STATE,
@@ -46,6 +47,7 @@ import { BG_TASK_FAILED, BG_TASK_SUCCEEDED, pollTask } from '../../utils/poll.ut
 import { parseFunction } from '../../utils/parseFunction'
 import { setNotification } from '../../reducers/notificationReducer'
 import { showErrorNotification } from '../../utils/notifications.util'
+import { datePickerPastOptions, getDatePickerFilterValue } from '../../utils/datePicker.util'
 
 import { ReactComponent as Delete } from 'igz-controls/images/delete.svg'
 import { ReactComponent as Run } from 'igz-controls/images/run.svg'
@@ -503,4 +505,16 @@ const checkFunctionExistence = (item, filters, projectName, dispatch) => {
       showErrorNotification(dispatch, {}, 'This function either does not exist or was deleted')
     })
   }
+}
+
+export const parseQueryParamsCallback = ([paramName, paramValue]) => {
+  if (paramName === DATES_FILTER) {
+    const dateFilter = getDatePickerFilterValue(
+      datePickerPastOptions,
+      paramValue
+    )
+    return dateFilter.value ? dateFilter : null
+  }
+
+  return paramValue
 }

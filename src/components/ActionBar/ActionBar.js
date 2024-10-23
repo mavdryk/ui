@@ -26,7 +26,7 @@ import { Form } from 'react-final-form'
 import { createForm } from 'final-form'
 import { isEmpty, isEqual } from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import DatePicker from '../../common/DatePicker/DatePicker'
 import FilterMenuModal from '../FilterMenuModal/FilterMenuModal'
@@ -47,17 +47,19 @@ import {
 } from '../../constants'
 import detailsActions from '../../actions/details'
 import { FILTERS_CONFIG } from '../../types'
-import { resetFilter, setFilters, setFiltersValues } from '../../reducers/filtersReducer'
+import { resetFilter, setFilters } from '../../reducers/filtersReducer'
 import { setFieldState } from 'igz-controls/utils/form.util'
+import { saveFilters } from '../../utils/filterHelpers'
+import { useInitialFiltersFromQueryParams } from '../../hooks/useInitialFiltersFromQueryParams.hook'
 
 import { ReactComponent as CollapseIcon } from 'igz-controls/images/collapse.svg'
 import { ReactComponent as ExpandIcon } from 'igz-controls/images/expand.svg'
 import { ReactComponent as RefreshIcon } from 'igz-controls/images/refresh.svg'
 
 const ActionBar = ({
+  actionButtons = [],
   autoRefreshIsEnabled = false,
   autoRefreshIsStopped = false,
-  actionButtons = [],
   cancelRequest = null,
   children,
   expand,
@@ -68,11 +70,12 @@ const ActionBar = ({
   hidden = false,
   navigateLink,
   page,
+  parseQueryParamsCallback,
   removeSelectedItem = null,
   setSelectedRowData = null,
   tab = '',
-  withRefreshButton = true,
-  withoutExpandButton
+  withoutExpandButton,
+  withRefreshButton = true
 }) => {
   const [autoRefresh, setAutoRefresh] = useState(autoRefreshIsEnabled)
   const filtersStore = useSelector(store => store.filtersStore)
@@ -84,9 +87,12 @@ const ActionBar = ({
   const changes = useSelector(store => store.detailsStore.changes)
   const dispatch = useDispatch()
   const params = useParams()
+  const [, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
 
   const actionBarClassNames = classnames('action-bar', hidden && 'action-bar_hidden')
+
+  useInitialFiltersFromQueryParams(filterMenuName, parseQueryParamsCallback)
 
   const formInitialValues = useMemo(() => {
     const initialValues = {
@@ -160,34 +166,34 @@ const ActionBar = ({
           dispatch(setFilters({ groupBy: GROUP_BY_NONE }))
         }
 
-        dispatch(
-          setFiltersValues({
-            name: filterMenuName,
-            value: { ...formValues }
-          })
-        )
+        const newFormValues = { ...formValues, ...filterMenuModal }
+        const newSearchParams = saveFilters(dispatch, setSearchParams, {
+          name: filterMenuName,
+          value: newFormValues
+        })
 
         removeSelectedItem && dispatch(removeSelectedItem({}))
         setSelectedRowData && setSelectedRowData({})
         handleExpandAll && handleExpandAll(true)
-        handleRefresh({ ...formValues, ...filterMenuModal }, true)
+        handleRefresh(newFormValues, newSearchParams)
       }
     },
     [
+      filtersHelper,
       changes,
       dispatch,
-      filterMenuName,
-      filtersHelper,
-      filtersStore.groupBy,
-      handleExpandAll,
-      handleRefresh,
-      navigate,
-      navigateLink,
       params.name,
       params.funcName,
       params.hash,
+      filtersStore.groupBy,
+      setSearchParams,
+      filterMenuName,
       removeSelectedItem,
-      setSelectedRowData
+      setSelectedRowData,
+      handleExpandAll,
+      handleRefresh,
+      navigate,
+      navigateLink
     ]
   )
 
@@ -196,12 +202,10 @@ const ActionBar = ({
       if (changes.counter > 0 && cancelRequest) {
         cancelRequest(REQUEST_CANCELED)
       } else {
-        dispatch(
-          setFiltersValues({
-            name: filterMenuName,
-            value: { ...formState.values }
-          })
-        )
+        saveFilters(dispatch, setSearchParams, {
+          name: filterMenuName,
+          value: { ...formState.values }
+        })
         handleRefresh({
           ...formState.values,
           ...filtersStore.filterMenuModal[filterMenuName].values
@@ -214,7 +218,8 @@ const ActionBar = ({
       dispatch,
       filterMenuName,
       filtersStore.filterMenuModal,
-      handleRefresh
+      handleRefresh,
+      setSearchParams
     ]
   )
 
@@ -233,12 +238,10 @@ const ActionBar = ({
 
     const newFilterValues = { ...formState.values, [DATES_FILTER]: selectedDate }
 
-    dispatch(
-      setFiltersValues({
-        name: filterMenuName,
-        value: newFilterValues
-      })
-    )
+    saveFilters(dispatch, setSearchParams, {
+      name: filterMenuName,
+      value: newFilterValues
+    })
 
     applyChanges(newFilterValues, filterMenuModal.values)
     input.onChange(selectedDate)
@@ -340,7 +343,13 @@ const ActionBar = ({
                     />
                   ))
               )}
-              {autoRefreshIsEnabled && <FormCheckBox className="auto-refresh" label={AUTO_REFRESH} name={AUTO_REFRESH_ID} />}
+              {autoRefreshIsEnabled && (
+                <FormCheckBox
+                  className="auto-refresh"
+                  label={AUTO_REFRESH}
+                  name={AUTO_REFRESH_ID}
+                />
+              )}
               <FormOnChange handler={setAutoRefresh} name={AUTO_REFRESH_ID} />
               {withRefreshButton && (
                 <RoundedIcon tooltipText="Refresh" onClick={() => refresh(formState)} id="refresh">
@@ -391,6 +400,7 @@ ActionBar.propTypes = {
   hidden: PropTypes.bool,
   navigateLink: PropTypes.string,
   page: PropTypes.string.isRequired,
+  parseQueryParamsCallback: PropTypes.func,
   removeSelectedItem: PropTypes.func,
   setSelectedRowData: PropTypes.func,
   tab: PropTypes.string,

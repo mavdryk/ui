@@ -1355,6 +1355,7 @@ function getPipelines(req, res) {
   if (req.params['project'] === '*') {
     const pipelinesRun = pipelineIDs.map(pipeline => pipeline.run)
     const filter = JSON.parse(req.query.filter)
+    const name = req.query['name-contains']
     const predicates = filter.predicates
 
     if (!predicates.length) {
@@ -1384,8 +1385,9 @@ function getPipelines(req, res) {
           ? queryStateValue.includes(pipeline.status)
           : pipeline.status === queryStateValue
         : true
+      const nameMatch = name ? pipeline.name.includes(name) : true
 
-      return timestampMatch && stateMatch
+      return timestampMatch && stateMatch && nameMatch
     })
 
     res.send({

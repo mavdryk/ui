@@ -424,10 +424,10 @@ export const createJobsMonitoringContent = (jobs, jobName, isStagingMode) => {
         return validateArguments(job.uid, tab, job.name)
           ? `/projects/*/${JOBS_MONITORING_PAGE}/${JOBS_MONITORING_JOBS_TAB}${
               job.name ? `/${job.name}` : ''
-            }/${job.project}/${job.uid}/${tab.toLowerCase()}`
+            }/${job.project}/${job.uid}/${tab.toLowerCase()}${window.location.search}`
           : ''
       } else {
-        return `/projects/*/${JOBS_MONITORING_PAGE}/${JOBS_MONITORING_JOBS_TAB}/${job.name}`
+        return `/projects/*/${JOBS_MONITORING_PAGE}/${JOBS_MONITORING_JOBS_TAB}/${job.name}${window.location.search}`
       }
     }
 
