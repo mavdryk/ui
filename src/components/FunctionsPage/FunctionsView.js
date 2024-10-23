@@ -42,6 +42,7 @@ import {
 import { FILTERS_CONFIG } from '../../types'
 import { SECONDARY_BUTTON } from 'igz-controls/constants'
 import { getNoDataMessage } from '../../utils/getNoDataMessage'
+import { parseQueryParamsCallback } from './functions.util'
 
 const FunctionsView = ({
   actionsMenu,
@@ -103,6 +104,7 @@ const FunctionsView = ({
                 handleRefresh={filtersChangeCallback}
                 navigateLink={`/projects/${params.projectName}/functions`}
                 page={FUNCTIONS_PAGE}
+                parseQueryParamsCallback={parseQueryParamsCallback}
               >
                 <FunctionsFilters />
               </ActionBar>

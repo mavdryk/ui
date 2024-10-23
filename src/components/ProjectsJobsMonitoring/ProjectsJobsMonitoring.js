@@ -52,6 +52,9 @@ import { TERTIARY_BUTTON } from 'igz-controls/constants'
 import { parseJob } from '../../utils/parseJob'
 import jobsActions from '../../actions/jobs'
 import workflowActions from '../../actions/workflow'
+import { parseScheduledQueryParamsCallback } from './ScheduledMonitoring/scheduledMonitoring.util'
+import { parseJobsQueryParamsCallback } from './JobsMonitoring/jobsMonitoring.util'
+import { parseWorkflowsQueryParamsCallback } from './WorkflowsMonitoring/workflowsMonitoring.util'
 
 import './projectsJobsMonitoring.scss'
 
@@ -313,17 +316,20 @@ const ProjectsJobsMonitoring = ({ fetchAllJobRuns, fetchJobFunction, fetchJobs }
       [JOBS_MONITORING_JOBS_TAB]: {
         filtersConfig: jobsFiltersConfig,
         handleRefresh: refreshJobs,
-        modalFilters: <JobsMonitoringFilters />
+        modalFilters: <JobsMonitoringFilters />,
+        parseQueryParamsCallback: parseJobsQueryParamsCallback
       },
       [JOBS_MONITORING_WORKFLOWS_TAB]: {
         filtersConfig: workflowsFiltersConfig,
         handleRefresh: getWorkflows,
-        modalFilters: <WorkflowsMonitoringFilters />
+        modalFilters: <WorkflowsMonitoringFilters />,
+        parseQueryParamsCallback: parseWorkflowsQueryParamsCallback
       },
       [JOBS_MONITORING_SCHEDULED_TAB]: {
         filtersConfig: scheduledFiltersConfig,
         handleRefresh: refreshScheduled,
-        modalFilters: <ScheduledMonitoringFilters />
+        modalFilters: <ScheduledMonitoringFilters />,
+        parseQueryParamsCallback: parseScheduledQueryParamsCallback
       }
     }
   }, [
@@ -358,6 +364,7 @@ const ProjectsJobsMonitoring = ({ fetchAllJobRuns, fetchJobFunction, fetchJobs }
                 handleRefresh={tabData[selectedTab].handleRefresh}
                 hidden={Boolean(params.jobId || params.workflowId)}
                 page={JOBS_MONITORING_PAGE}
+                parseQueryParamsCallback={tabData[selectedTab].parseQueryParamsCallback}
                 tab={selectedTab}
                 withRefreshButton
                 withoutExpandButton

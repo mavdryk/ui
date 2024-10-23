@@ -17,9 +17,10 @@ illegal under applicable law, and the grant of the foregoing license
 under the Apache 2.0 license is conditioned upon your compliance with
 such restriction.
 */
-import { useCallback, useEffect, useLayoutEffect } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { isEqual, isNull } from 'lodash'
+import { debounce } from 'lodash'
 
 import {
   BE_PAGE,
@@ -42,25 +43,27 @@ export const usePagination = ({
 }) => {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const resetPagination = useCallback(() => {
-    setSearchParams(
-      prevSearchParams => {
-        prevSearchParams.set(BE_PAGE, 1)
-        prevSearchParams.set(FE_PAGE, 1)
-        return prevSearchParams
-      },
-      { replace: true }
-    )
+  const resetPagination = useCallback(
+    searchParams => {
+      searchParams.set(BE_PAGE, 1)
+      searchParams.set(FE_PAGE, 1)
+      setSearchParams(searchParams, { replace: true })
 
-    paginationConfigRef.current = {
-      [BE_PAGE_SIZE]: bePageSize,
-      [FE_PAGE_SIZE]: fePageSize,
-      [BE_PAGE]: 1,
-      [FE_PAGE]: 1,
-      isNewResponse: false,
-      paginationResponse: {}
-    }
-  }, [bePageSize, fePageSize, paginationConfigRef, setSearchParams])
+      paginationConfigRef.current = {
+        [BE_PAGE_SIZE]: bePageSize,
+        [FE_PAGE_SIZE]: fePageSize,
+        [BE_PAGE]: 1,
+        [FE_PAGE]: 1,
+        isNewResponse: false,
+        paginationResponse: {}
+      }
+    },
+    [bePageSize, fePageSize, paginationConfigRef, setSearchParams]
+  )
+
+  const refreshContentDebounced = useMemo(() => {
+    return debounce((refreshContent) => refreshContent())
+  }, [])
 
   useLayoutEffect(() => {
     const paginationResponse = paginationConfigRef.current.paginationResponse || null
@@ -120,9 +123,9 @@ export const usePagination = ({
         (paginationResponse?.page &&
           paginationResponse?.page !== parseInt(searchParams.get(BE_PAGE))))
     ) {
-      refreshContent()
+      refreshContentDebounced(refreshContent)
     }
-  }, [paginationConfigRef, refreshContent, searchParams])
+  }, [paginationConfigRef, refreshContent, refreshContentDebounced, searchParams])
 
   useEffect(() => {
     if (

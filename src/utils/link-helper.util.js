@@ -47,7 +47,7 @@ export const getCloseDetailsLink = (paramName) => {
     .splice(0, window.location.pathname.split('/').lastIndexOf(paramName) + 1)
     .join('/')
 
-  return generateUrlFromRouterPath(link)
+  return `${generateUrlFromRouterPath(link)}${window.location.search}`
 }
 
 export const getDefaultCloseDetailsLink = (params, page, tab) => {
