@@ -593,9 +593,9 @@ const Functions = ({
     dispatch(setFilters({ groupBy: GROUP_BY_NAME }))
   }, [dispatch, params.projectName])
 
-  const filtersChangeCallback = (filters, filtersChange) => {
-    if (filtersChange) {
-      resetPagination()
+  const filtersChangeCallback = (filters, searchParams) => {
+    if (searchParams) {
+      resetPagination(searchParams)
     }
 
     refreshFunctions(filters)

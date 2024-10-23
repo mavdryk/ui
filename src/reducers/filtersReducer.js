@@ -18,7 +18,7 @@ under the Apache 2.0 license is conditioned upon your compliance with
 such restriction.
 */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { set } from 'lodash'
+import { cloneDeep, isEmpty, pick, set } from 'lodash'
 
 import {
   ARTIFACT_OTHER_TYPE,
@@ -119,11 +119,11 @@ const initialState = {
     [FUNCTION_FILTERS]: {
       values: {
         [NAME_FILTER]: '',
-        [DATES_FILTER]: getDatePickerFilterValue(datePickerPastOptions, ANY_TIME_DATE_OPTION),
+        [DATES_FILTER]: getDatePickerFilterValue(datePickerPastOptions, ANY_TIME_DATE_OPTION)
       },
       initialValues: {
         [NAME_FILTER]: '',
-        [DATES_FILTER]: getDatePickerFilterValue(datePickerPastOptions, ANY_TIME_DATE_OPTION),
+        [DATES_FILTER]: getDatePickerFilterValue(datePickerPastOptions, ANY_TIME_DATE_OPTION)
       }
     },
     [CONSUMER_GROUPS_FILTER]: {
@@ -225,6 +225,8 @@ const initialState = {
   }
 }
 
+export const filtersInitialState = cloneDeep(initialState)
+
 export const getFilterTagOptions = createAsyncThunk(
   'getFilterTagOptions',
   ({ dispatch, fetchTags, project, category, config }) => {
@@ -282,6 +284,31 @@ const filtersSlice = createSlice({
 
       set(state, [FILTER_MENU_MODAL, action.payload.name, 'values'], newFilterValues)
     },
+    setAllFiltersValues(state, action) {
+      const payloadValue = action.payload.value ?? {}
+      const newFilterMenuValues = pick(
+        payloadValue,
+        Object.keys(state[FILTER_MENU]?.[action.payload.name]?.values || {})
+      )
+      const newFilterMenuModalValues = pick(
+        payloadValue,
+        Object.keys(state[FILTER_MENU_MODAL]?.[action.payload.name]?.values || {})
+      )
+
+      if (!isEmpty(newFilterMenuValues)) {
+        set(state, [FILTER_MENU, action.payload.name, 'values'], {
+          ...state[FILTER_MENU][action.payload.name]?.values,
+          ...newFilterMenuValues
+        })
+      }
+
+      if (!isEmpty(newFilterMenuModalValues)) {
+        set(state, [FILTER_MENU_MODAL, action.payload.name, 'values'], {
+          ...state[FILTER_MENU_MODAL][action.payload.name]?.values,
+          ...newFilterMenuModalValues
+        })
+      }
+    },
     setModalFiltersInitialValues(state, action) {
       const payloadValue = action.payload.value ?? {}
       const newFilterInitialValues = {
@@ -306,6 +333,7 @@ export const {
   removeFilters,
   resetFilter,
   resetModalFilter,
+  setAllFiltersValues,
   setFilters,
   setFiltersValues,
   setModalFiltersValues,

@@ -152,12 +152,6 @@ const FilterMenuModal = ({
   }
 
   const handleApplyFilters = formState => {
-    dispatch(
-      setModalFiltersValues({
-        name: filterMenuName,
-        value: { ...formState.values }
-      })
-    )
     applyChanges && applyChanges(formState.values)
     setFiltersWizardIsShown(false)
   }

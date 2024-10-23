@@ -17,29 +17,22 @@ illegal under applicable law, and the grant of the foregoing license
 under the Apache 2.0 license is conditioned upon your compliance with
 such restriction.
 */
-import functionsActions from '../../../actions/functions'
-import { DATES_FILTER, STATUS_FILTER } from '../../../constants'
-import { datePickerPastOptions, getDatePickerFilterValue } from '../../../utils/datePicker.util'
-import { workflowsStatuses } from '../../FilterMenu/filterMenu.settings'
+import { DATES_FILTER, TYPE_FILTER } from '../../../constants'
+import { datePickerFutureOptions, getDatePickerFilterValue } from '../../../utils/datePicker.util'
+import { filterScheduledTypeOptions } from '../../FilterMenu/filterMenu.settings'
 
-export const actionCreator = {
-  fetchFunctionLogs: functionsActions.fetchFunctionLogs
-}
-
-export const parseWorkflowsQueryParamsCallback = ([paramName, paramValue]) => {
+export const parseScheduledQueryParamsCallback = ([paramName, paramValue]) => {
   if (paramName === DATES_FILTER) {
     const dateFilter = getDatePickerFilterValue(
-      datePickerPastOptions,
+      datePickerFutureOptions,
       paramValue
     )
 
     return dateFilter.value ? dateFilter : null
   }
 
-  if (paramName === STATUS_FILTER) {
-    const filteredStatuses = paramValue?.split(',').filter(paramStatus => workflowsStatuses.find(status => status.id === paramStatus))
-
-    return filteredStatuses?.length ? filteredStatuses : null
+  if (paramName === TYPE_FILTER) {
+    return filterScheduledTypeOptions.find(type => type.id === paramValue)?.id
   }
 
   return paramValue
