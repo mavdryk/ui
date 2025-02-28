@@ -57,12 +57,7 @@ export const isEditableParameterValid = (parameter, parameters) => {
   }
 }
 
-export const setFunctionParameters = (
-  parameter,
-  key,
-  setNewFunctionParameters,
-  parameters
-) => {
+export const setFunctionParameters = (parameter, key, setNewFunctionParameters, parameters) => {
   switch (parameter.type) {
     case NUMBER_TYPE:
       setNewFunctionParameters({

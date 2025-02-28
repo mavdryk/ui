@@ -163,15 +163,15 @@ const projectsAction = {
         throw error
       })
   },
-  deleteProjectBegin: (projectName) => ({
+  deleteProjectBegin: projectName => ({
     type: DELETE_PROJECT_BEGIN,
     payload: projectName
   }),
-  deleteProjectFailure: (projectName) => ({
+  deleteProjectFailure: projectName => ({
     type: DELETE_PROJECT_FAILURE,
     payload: projectName
   }),
-  deleteProjectSuccess: (projectName) => ({
+  deleteProjectSuccess: projectName => ({
     type: DELETE_PROJECT_SUCCESS,
     payload: projectName
   }),

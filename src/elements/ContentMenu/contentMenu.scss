@@ -1,6 +1,6 @@
-@import '~igz-controls/scss/colors';
-@import '~igz-controls/scss/mixins';
-@import '~igz-controls/scss/borders';
+@use 'igz-controls/scss/colors';
+@use 'igz-controls/scss/mixins';
+@use 'igz-controls/scss/borders';
 
 .content-menu {
   display: inline-flex;
@@ -14,12 +14,12 @@
     align-items: center;
     list-style-type: none;
 
-    @include resetSpaces;
+    @include mixins.resetSpaces;
   }
 
   &__item {
     margin: 0 10px 0 0;
-    color: $topaz;
+    color: colors.$topaz;
     font-weight: 400;
     font-size: 18px;
     line-height: 1;
@@ -33,7 +33,7 @@
     &::after {
       display: block;
       width: 100%;
-      border-bottom: $activeJobTabBorder;
+      border-bottom: borders.$activeJobTabBorder;
       border-width: 2px;
       transform: scale(0);
       opacity: 0;
@@ -69,7 +69,7 @@
     }
 
     &_active {
-      color: $primary;
+      color: colors.$primary;
       font-weight: 700;
 
       &::after {
@@ -83,7 +83,7 @@
 
       .content-menu__item-icon {
         path {
-          fill: $cornflowerBlue;
+          fill: colors.$cornflowerBlue;
         }
       }
     }
@@ -97,7 +97,7 @@
     }
 
     &__preview {
-      color: $spunPearl;
+      color: colors.$spunPearl;
       font-size: 10px;
     }
   }

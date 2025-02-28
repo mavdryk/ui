@@ -80,11 +80,11 @@ In order to override them, add a **.env.development.local** file next to **.env*
 For example:
 
 ```
-REACT_APP_MLRUN_API_URL=http://3.129.154.119:30080
-REACT_APP_MLRUN_V3IO_ACCESS_KEY=2826d9df-033d-4ac2-b13a-1f8f9d14aaeb
-REACT_APP_NUCLIO_API_URL=http://localhost:8070
-REACT_APP_NUCLIO_UI_URL=http://localhost:8070
-REACT_APP_FUNCTION_CATALOG_URL=https://raw.githubusercontent.com/mlrun/functions/master
+VITE_MLRUN_API_URL=http://3.129.154.119:30080
+VITE_MLRUN_V3IO_ACCESS_KEY=2826d9df-033d-4ac2-b13a-1f8f9d14aaeb
+VITE_NUCLIO_API_URL=http://localhost:8070
+VITE_NUCLIO_UI_URL=http://localhost:8070
+VITE_FUNCTION_CATALOG_URL=https://raw.githubusercontent.com/mlrun/functions/master
 ```
 
 ### `npm start`

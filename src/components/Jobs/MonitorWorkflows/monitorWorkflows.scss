@@ -1,9 +1,15 @@
-@import '~igz-controls/scss/variables';
-@import 'src/scss/mixins';
+@use '../../../scss/mixins';
+@use 'igz-controls/scss/variables';
 
-$monitorWorkflowsRowHeight: $rowHeightSmall;
-$monitorWorkflowsHeaderRowHeight: $headerRowHeight;
-$monitorWorkflowsRowHeightExtended: $rowHeightSmall;
+$monitorWorkflowsRowHeight: variables.$rowHeightSmall;
+$monitorWorkflowsHeaderRowHeight: variables.$headerRowHeight;
+$monitorWorkflowsRowHeightExtended: variables.$rowHeightSmall;
+
+:root {
+  --monitorWorkflowsRowHeight: $monitorWorkflowsRowHeight;
+  --monitorWorkflowsHeaderRowHeight: $monitorWorkflowsHeaderRowHeight;
+  --monitorWorkflowsRowHeightExtended: $monitorWorkflowsRowHeightExtended;
+}
 
 .monitor-workflows {
   &__subtitle {
@@ -12,15 +18,9 @@ $monitorWorkflowsRowHeightExtended: $rowHeightSmall;
 }
 
 .monitor-workflows-table {
-  @include rowsHeight(
+  @include mixins.rowsHeight(
     $monitorWorkflowsHeaderRowHeight,
     $monitorWorkflowsRowHeight,
     $monitorWorkflowsRowHeightExtended
   );
-}
-
-:export {
-  monitorWorkflowsRowHeight: $monitorWorkflowsRowHeight;
-  monitorWorkflowsHeaderRowHeight: $monitorWorkflowsHeaderRowHeight;
-  monitorWorkflowsRowHeightExtended: $monitorWorkflowsRowHeightExtended;
 }

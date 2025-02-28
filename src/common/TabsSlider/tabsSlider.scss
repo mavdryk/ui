@@ -1,10 +1,10 @@
-@import '~igz-controls/scss/colors';
-@import '~igz-controls/scss/borders';
+@use 'igz-controls/scss/colors';
+@use 'igz-controls/scss/borders';
 
 .tabs-slider {
   display: flex;
   align-items: stretch;
-  background-color: $white;
+  background-color: colors.$white;
   margin-bottom: 1em;
 
   &__tabs-wrapper {
@@ -21,7 +21,7 @@
     align-items: center;
     padding: 5px;
     margin: 0 15px 0 0;
-    color: $topaz;
+    color: colors.$topaz;
     font-weight: 700;
     font-size: 18px;
     text-transform: capitalize;
@@ -33,8 +33,8 @@
     }
 
     &_active {
-      color: $primary;
-      border-bottom-color: $cornflowerBlue;
+      color: colors.$primary;
+      border-bottom-color: colors.$cornflowerBlue;
     }
 
     &-tip {
@@ -50,7 +50,7 @@
         margin-right: 5px;
 
         path {
-          fill: $topaz;
+          fill: colors.$topaz;
         }
       }
     }
@@ -80,12 +80,12 @@
       pointer-events: none;
 
       & path {
-        fill: $spunPearl;
+        fill: colors.$spunPearl;
       }
     }
 
     &:hover:not(.details-menu__arrow_disabled) {
-      background-color: $mulledWineThree;
+      background-color: colors.$mulledWineThree;
       cursor: pointer;
     }
 
@@ -101,9 +101,9 @@
       &__tab {
         justify-content: center;
         text-align: center;
-        border: 1px solid $amethyst;
+        border: 1px solid colors.$amethyst;
         border-radius: 8px;
-        color: $primary;
+        color: colors.$primary;
         width: 148px;
         height: 64px;
         font-size: 15px;
@@ -114,8 +114,8 @@
 
         &_active {
           border: 1px solid transparent;
-          color: $amethyst;
-          background-color: $frenchLilac;
+          color: colors.$amethyst;
+          background-color: colors.$frenchLilac;
         }
       }
     }

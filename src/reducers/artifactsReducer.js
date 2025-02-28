@@ -127,26 +127,25 @@ export const fetchArtifact = createAsyncThunk('fetchArtifact', ({ project, artif
   })
 })
 export const fetchAllArtifactKindsTags = createAsyncThunk(
-    'fetchAllArtifactKindsTags',
-    ({ project, filters, config, setRequestErrorMessage = () => {}, withExactName }, thunkAPI) => {
+  'fetchAllArtifactKindsTags',
+  ({ project, filters, config, setRequestErrorMessage = () => {}, withExactName }, thunkAPI) => {
+    return artifactsApi
+      .getArtifacts(project, filters, config, withExactName)
+      .then(({ data }) => {
+        const result = parseArtifacts(data.artifacts)
+        const generatedArtifacts = generateArtifacts(filterArtifacts(result))
 
-      return artifactsApi
-          .getArtifacts(project, filters, config, withExactName)
-          .then(({ data }) => {
-            const result = parseArtifacts(data.artifacts)
-            const generatedArtifacts = generateArtifacts(filterArtifacts(result))
-
-            return generatedArtifacts.map(artifact => artifact.tag)
-          })
-          .catch(error => {
-            largeResponseCatchHandler(
-                error,
-                'Failed to fetch artifact tags',
-                thunkAPI.dispatch,
-                setRequestErrorMessage
-            )
-          })
-    }
+        return generatedArtifacts.map(artifact => artifact.tag)
+      })
+      .catch(error => {
+        largeResponseCatchHandler(
+          error,
+          'Failed to fetch artifact tags',
+          thunkAPI.dispatch,
+          setRequestErrorMessage
+        )
+      })
+  }
 )
 export const fetchArtifacts = createAsyncThunk(
   'fetchArtifacts',
@@ -507,7 +506,7 @@ const artifactsSlice = createSlice({
     builder.addCase(fetchArtifactsFunction.pending, state => {
       state.pipelines.loading = true
     })
-    builder.addCase(fetchArtifactsFunction.fulfilled, (state, action) => {
+    builder.addCase(fetchArtifactsFunction.fulfilled, state => {
       state.error = null
       state.pipelines.loading = false
     })

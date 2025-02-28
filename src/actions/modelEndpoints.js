@@ -64,45 +64,47 @@ const modelEndpointsActions = {
     type: FETCH_ENDPOINT_METRICS_SUCCESS,
     payload
   }),
-  fetchModelEndpointMetricsValues: (
-    project,
-    uid,
-    params,
-    abortController,
-    setRequestErrorMessage = () => {}
-  ) => dispatch => {
-    const config = {
-      params,
-      ui: {
-        controller: abortController,
-        setRequestErrorMessage,
-        customErrorMessage: 'The query result is too large to display. Reduce either the number of metrics or the time period.'
+  fetchModelEndpointMetricsValues:
+    (project, uid, params, abortController, setRequestErrorMessage = () => {}) =>
+    dispatch => {
+      const config = {
+        params,
+        ui: {
+          controller: abortController,
+          setRequestErrorMessage,
+          customErrorMessage:
+            'The query result is too large to display. Reduce either the number of metrics or the time period.'
+        }
       }
-    }
 
-    setRequestErrorMessage('')
-    dispatch(modelEndpointsActions.fetchEndpointMetricsValuesBegin())
+      setRequestErrorMessage('')
+      dispatch(modelEndpointsActions.fetchEndpointMetricsValuesBegin())
 
-    return modelEndpointsApi
-      .getModelEndpointMetricsValues(project, uid, config)
-      .then(({ data = [] }) => {
-        const differenceInDays = params.end - params.start
-        const timeUnit = differenceInDays > TIME_FRAME_LIMITS['24_HOURS'] ? 'days' : 'hours'
-        const metrics = parseMetrics(data, timeUnit)
+      return modelEndpointsApi
+        .getModelEndpointMetricsValues(project, uid, config)
+        .then(({ data = [] }) => {
+          const differenceInDays = params.end - params.start
+          const timeUnit = differenceInDays > TIME_FRAME_LIMITS['24_HOURS'] ? 'days' : 'hours'
+          const metrics = parseMetrics(data, timeUnit)
 
-        dispatch(modelEndpointsActions.fetchEndpointMetricsValuesSuccess())
+          dispatch(modelEndpointsActions.fetchEndpointMetricsValuesSuccess())
 
-        return metrics
-      })
-      .catch(error => {
-        dispatch(
-          modelEndpointsActions.fetchEndpointMetricsValuesFailure(
-            error?.message === DEFAULT_ABORT_MSG ? null : error
+          return metrics
+        })
+        .catch(error => {
+          dispatch(
+            modelEndpointsActions.fetchEndpointMetricsValuesFailure(
+              error?.message === DEFAULT_ABORT_MSG ? null : error
+            )
           )
-        )
-        largeResponseCatchHandler(error, 'Failed to fetch metrics', dispatch, setRequestErrorMessage)
-      })
-  },
+          largeResponseCatchHandler(
+            error,
+            'Failed to fetch metrics',
+            dispatch,
+            setRequestErrorMessage
+          )
+        })
+    },
   fetchEndpointMetricsValuesBegin: () => ({
     type: FETCH_ENDPOINT_METRICS_VALUES_BEGIN
   }),
