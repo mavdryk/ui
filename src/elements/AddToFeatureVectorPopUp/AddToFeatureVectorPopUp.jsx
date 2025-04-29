@@ -110,7 +110,7 @@ const AddToFeatureVectorPopUp = ({ action, currentProject }) => {
     setIsPopUpOpen(false)
     setIsCreateFeaturePopUpOpen(false)
 
-    if (projectStore.projectsNames.data.includes(currentProject)) {
+    if (projectStore?.projectsNames?.data?.includes(currentProject)) {
       dispatch(
         setFeaturesPanelData({
           currentProject: currentProject,
