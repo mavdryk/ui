@@ -39,8 +39,9 @@ import {
 } from '../../constants'
 import { generateNuclioLink } from '../../utils'
 
-export const generateMlrunScreens = params =>
-  params.projectName
+export const generateMlrunScreens = params => {
+  const nuclioLinkProperty = window.mlrunConfig.nuclioInMlrun ? 'linkTo' : 'link'
+  return params.projectName
     ? [
         {
           label: 'Project monitoring',
@@ -63,12 +64,12 @@ export const generateMlrunScreens = params =>
         {
           label: 'Real-time functions',
           id: 'Real-time functions',
-          link: generateNuclioLink(`/projects/${params.projectName}/functions`)
+          [nuclioLinkProperty]: generateNuclioLink(`/projects/${params.projectName}/functions`)
         },
         {
           label: 'API gateways',
           id: 'API gateways',
-          link: generateNuclioLink(`/projects/${params.projectName}/api-gateways`)
+          [nuclioLinkProperty]: generateNuclioLink(`/projects/${params.projectName}/api-gateways`)
         },
         {
           label: 'Alerts',
@@ -92,6 +93,7 @@ export const generateMlrunScreens = params =>
           linkTo: `/${PROJECTS_PAGE_PATH}/*/${JOBS_MONITORING_PAGE}`
         }
       ]
+}
 
 export const generateTabsList = () => [
   {

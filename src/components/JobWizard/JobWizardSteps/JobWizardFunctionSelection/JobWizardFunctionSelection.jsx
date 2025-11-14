@@ -102,6 +102,7 @@ const JobWizardFunctionSelection = ({
     store =>
       store.filtersStore[FILTER_MENU_MODAL]?.[JOB_WIZARD_FILTERS]?.values ?? hubFiltersInitialValues
   )
+
   const { loading } = useSelector(store => store.functionsStore)
 
   const filtersStoreHubCategories = useMemo(

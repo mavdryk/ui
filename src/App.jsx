@@ -77,6 +77,7 @@ const FeatureStore = lazyRetry(() => import('./components/FeatureStore/FeatureSt
 const Files = lazyRetry(() => import('./components/Files/Files'))
 const FunctionsOld = lazyRetry(() => import('./components/FunctionsPageOld/FunctionsOld')) // todo [functionsWithPagination] delete FunctionsOld and other related logic in 1.9.0
 const Functions = lazyRetry(() => import('./components/FunctionsPage/Functions'))
+const NuclioFunctions = lazyRetry(() => import('./components/NuclioFunctions/NuclioFunctions'))
 const Jobs = lazyRetry(() => import('./components/Jobs/Jobs'))
 const MonitorJobs = lazyRetry(() => import('./components/Jobs/MonitorJobs/MonitorJobs'))
 const MonitorWorkflows = lazyRetry(
@@ -155,6 +156,7 @@ const App = () => {
   const LLMPromptsComponent = wrapComponentForNavbarNavigationTracking(LLMPrompts)
   const FunctionsOldComponent = wrapComponentForNavbarNavigationTracking(FunctionsOld)
   const FunctionsComponent = wrapComponentForNavbarNavigationTracking(Functions)
+  const NuclioFunctionsComponent = wrapComponentForNavbarNavigationTracking(NuclioFunctions)
 
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -284,6 +286,15 @@ const App = () => {
           ].map((path, index) => (
             <Fragment key={index}>
               <Route path={path} element={<DatasetsComponent isAllVersions={[2, 3].includes(index)} />} />
+            </Fragment>
+          ))}
+          {[
+            'projects/:projectName/nuclio-functions/*',
+            'projects/:projectName/api-gateways/*',
+            'projects/:projectName/create-function'
+          ].map((path, index) => (
+            <Fragment key={index}>
+              <Route path={path} element={<NuclioFunctionsComponent />} />
             </Fragment>
           ))}
           <Route

@@ -49,7 +49,7 @@ const createConsumerGroupsContent = (content, params) => {
               `/projects/${params.projectName}/functions/${contentItem.functionName}`
             )
           },
-          linkIsExternal: true,
+          linkIsExternal: !window.mlrunConfig.nuclioInMlrun,
           className: 'table-cell-1'
         }
       }

@@ -43,7 +43,8 @@ fetch(`${import.meta.env.VITE_PUBLIC_URL}/config.json`, { cache: 'no-store' })
 
       window.mlrunConfig = {
         ...config,
-        nuclioUiUrl: `${mlrunProtocol}${config.nuclioUiUrl}`
+        nuclioUiUrl: `${mlrunProtocol}${config.nuclioUiUrl}`,
+        nuclioInMlrun: import.meta.env.VITE_FEDERATION
       }
     } else {
       window.mlrunConfig = config

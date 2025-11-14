@@ -393,7 +393,7 @@ export const getInitialCards = (params, navigate, isDemoMode) => {
           label: 'Create real-time function',
           handleClick: () => ({
             path: generateNuclioLink(`${base_url}/create-function`),
-            externalLink: true
+            externalLink: !window.mlrunConfig.nuclioInMlrun
           }),
           tooltip:
             'These are typically used for serving, APIs, and stream processing. Specify the code, resources, and triggers.'
@@ -465,7 +465,7 @@ export const getInitialCards = (params, navigate, isDemoMode) => {
           id: 'nuclioFunctions',
           handleClick: () => ({
             path: generateNuclioLink(`${base_url}/functions`),
-            externalLink: true
+            externalLink: !window.mlrunConfig.nuclioInMlrun
           }),
           label: 'Nuclio Functions'
         },

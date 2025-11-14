@@ -45,6 +45,9 @@ const ProjectFunctions = ({ nuclioStreamsAreEnabled }) => {
   const { isNuclioModeDisabled } = useNuclioMode()
   const nuclioStore = useSelector(store => store.nuclioStore)
   const dispatch = useDispatch()
+  const nuclioLinkProperty = useMemo(() => {
+    return window.mlrunConfig.nuclioInMlrun ? 'link': 'href'
+  }, [])
 
   useEffect(() => {
     if (!isNuclioModeDisabled) {
@@ -77,7 +80,6 @@ const ProjectFunctions = ({ nuclioStreamsAreEnabled }) => {
       nuclioStore.currentProjectFunctions,
       'metadata.name'
     )
-
     const functionsRunning = groupeFunctionsRunning.reduce(
       (prev, curr) =>
         !curr.spec.disable && curr.status.state === FUNCTION_READY_STATE ? (prev += 1) : prev,
@@ -95,7 +97,7 @@ const ProjectFunctions = ({ nuclioStreamsAreEnabled }) => {
         label: 'Running',
         className: RUNNING_STATE,
         status: RUNNING_STATE,
-        href: generateNuclioLink(`/projects/${params.projectName}/functions`),
+        [nuclioLinkProperty]: generateNuclioLink(`/projects/${params.projectName}/functions`),
         loading: nuclioStore.loading
       },
       failed: {
@@ -104,14 +106,14 @@ const ProjectFunctions = ({ nuclioStreamsAreEnabled }) => {
         label: 'Failed',
         status: FAILED_STATE,
         className: functionsFailed > 0 ? FAILED_STATE : RUNNING_STATE,
-        href: generateNuclioLink(`/projects/${params.projectName}/functions`),
+        [nuclioLinkProperty]: generateNuclioLink(`/projects/${params.projectName}/functions`),
         loading: nuclioStore.loading
       },
       apiGateways: {
         value: nuclioStore.apiGateways,
         label: 'API gateways',
         className: RUNNING_STATE,
-        href: generateNuclioLink(`/projects/${params.projectName}/api-gateways`),
+        [nuclioLinkProperty]: generateNuclioLink(`/projects/${params.projectName}/api-gateways`),
         loading: nuclioStore.loading
       },
       ...(nuclioStreamsAreEnabled && {
@@ -135,7 +137,8 @@ const ProjectFunctions = ({ nuclioStreamsAreEnabled }) => {
     nuclioStore.v3ioStreams.data,
     params.projectName,
     nuclioStreamsAreEnabled,
-    isNuclioModeDisabled
+    isNuclioModeDisabled,
+    nuclioLinkProperty
   ])
 
   const functionsTable = useMemo(() => {
@@ -159,7 +162,7 @@ const ProjectFunctions = ({ nuclioStreamsAreEnabled }) => {
         return {
           name: {
             value: func.metadata.name,
-            href: generateNuclioLink(
+            [nuclioLinkProperty]: generateNuclioLink(
               `/projects/${params.projectName}/functions/${func.metadata.name}`
             ),
             className: 'table-cell_big'
@@ -186,17 +189,19 @@ const ProjectFunctions = ({ nuclioStreamsAreEnabled }) => {
         body: functionsTableBody
       }
     }
-  }, [params.projectName, nuclioStore.currentProjectFunctions])
+  }, [params.projectName, nuclioStore.currentProjectFunctions, nuclioLinkProperty])
 
   return (
     <ProjectDataCard
+      {...{
+        [nuclioLinkProperty]: generateNuclioLink(`/projects/${params.projectName}/functions`)
+      }}
       content={{
         data: nuclioStore.currentProjectFunctions,
         error: isNuclioModeDisabled ? 'Nuclio is not deployed' : nuclioStore.error,
         loading: nuclioStore.loading
       }}
       footerLinkText="All real-time functions"
-      href={generateNuclioLink(`/projects/${params.projectName}/functions`)}
       params={params}
       statistics={functions}
       subTitle="Recent real-time functions"

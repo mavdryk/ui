@@ -117,13 +117,35 @@ const generateLinkPath = (uri = '') => {
 }
 
 const generateNuclioLink = pathname => {
-  const linkUrl = new URL(`${window.mlrunConfig.nuclioUiUrl}${pathname}`)
+  if (window.mlrunConfig.nuclioInMlrun) {
+    return pathname.replace(
+      /(\/projects\/[^/]+\/)functions(?=\/|\?|$)/,
+      '$1nuclio-functions'
+    )
+  } else {
+    const linkUrl = new URL(`${window.mlrunConfig.nuclioUiUrl}${pathname}`)
+
+    if (window.location.origin !== window.mlrunConfig.nuclioUiUrl) {
+      linkUrl.searchParams.set?.('origin', window.location.origin)
+    }
+
+    return linkUrl.toString()
+  }
+}
+
+const generateNuclioIframeLink = pathname => {
+  const transformedPathname = pathname.replace(
+    /(\/projects\/[^/]+\/)nuclio-functions(?=\/|\?|$)/,
+    '$1functions'
+  )
+
+  const linkUrl = new URL(`${window.mlrunConfig.nuclioUiUrl}${transformedPathname}`)
 
   if (window.location.origin !== window.mlrunConfig.nuclioUiUrl) {
-    linkUrl.searchParams.set?.('origin', window.location.origin)
+    linkUrl.searchParams.set?.('nuclioOrigin', window.location.origin)
   }
 
   return linkUrl.toString()
 }
 
-export { generateLinkPath, generateNuclioLink, parseUri, parseIdentifier }
+export { generateLinkPath, generateNuclioLink, generateNuclioIframeLink, parseUri, parseIdentifier }

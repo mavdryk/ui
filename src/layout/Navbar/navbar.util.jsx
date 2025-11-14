@@ -124,14 +124,14 @@ export const getLinks = projectName => {
       id: 'real-time-functions',
       label: 'Real-time functions',
       link: generateNuclioLink(`${pathname}/functions`),
-      externalLink: true
+      externalLink: !window.mlrunConfig.nuclioInMlrun
     },
     {
       icon: <APIIcon />,
       id: 'api-gateways',
       label: 'API gateways',
       link: generateNuclioLink(`${pathname}/api-gateways`),
-      externalLink: true
+      externalLink: !window.mlrunConfig.nuclioInMlrun
     }
   ]
 }
